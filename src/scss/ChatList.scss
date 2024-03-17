@@ -1,0 +1,47 @@
+.chat-list {
+  width: 400px;
+  height: 100vh;
+
+  padding: 20px;
+  background-color: #F8FAFF;
+
+  // Seerch bar
+  .ant-input-outlined {
+    border-radius: 20px;
+    background-color: #EAF2FE;
+    border: none;
+
+    .ant-input {
+      padding: 8px 0px 8px 0px;
+    }
+    .ant-input::placeholder {
+      color: #709CE6;
+
+      font-size: 16px;
+    }
+  }
+
+  .search-bar {
+    margin: 30px 0px 30px 0px;
+  }
+
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    h1 {
+      color: #676667;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .pinned-container, .all-chats-container{
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  } 
+
+
+}
