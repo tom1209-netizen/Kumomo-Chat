@@ -32,7 +32,6 @@ function ChatWindow({ userName, active }) {
         </div>
       </div>
       <div className="msgs-container">
-        
       </div>
       <div className="chat-bottom">
         <Input

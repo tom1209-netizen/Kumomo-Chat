@@ -1,0 +1,49 @@
+.form-container {
+  width: 100dvw;
+  height: 100dvh;
+
+  background-color: #5B96F7;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+
+    width: 30%;
+    // Use clamp
+
+    background-color: white;
+
+    padding: 30px;
+
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+
+    .form-header {
+      text-align: center;
+
+      color: #709CE6;
+      font-weight: bold;
+
+      margin-bottom: 20px;
+    }
+
+    .sign-up-btn-container {
+      display: flex;
+      justify-content: center;
+
+      .sign-up-btn {
+        margin-right: auto;
+      }
+    }
+
+    .image-upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+}
