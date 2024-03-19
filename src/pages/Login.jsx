@@ -1,11 +1,22 @@
 import { Form, Input, Button, Checkbox } from 'antd';
 import {LockOutlined, MailOutlined} from '@ant-design/icons';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebase-config.js";
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import "../scss/Login.scss";
 
 export default function Login() {
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-  };
+  const navigate = useNavigate(); 
+
+  const handleSubmit = async ({email, password}) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
 
   return (
     <div className="form-container">
@@ -13,14 +24,14 @@ export default function Login() {
         name="normal_login"
         className="login-form"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={handleSubmit}
       >
         <h1 className='form-header'>Kumomo</h1>
         <Form.Item
-          name="emai."
+          name="email"
           rules={[{ required: true, message: 'Please input your email!' }]}
         >
-          <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Username" />
+          <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
         </Form.Item>
 
         <Form.Item
@@ -32,10 +43,10 @@ export default function Login() {
             type="password"
             placeholder="Password"
           />
-          <a className="login-form-forgot" href="">
-            Forgot password
-          </a>
         </Form.Item>
+        <a className="login-form-forgot" href="">
+            Forgot password
+        </a>
 
         <Form.Item name="remember" valuePropName="checked" noStyle>
           <Checkbox>Remember me</Checkbox>
@@ -46,7 +57,7 @@ export default function Login() {
             Log in
           </Button>
         </Form.Item>
-        <p>Need account ? <a href="">register now!</a></p>
+        <p>Need account ? <Link to="/register">register now!</Link></p>
       </Form>
     </div>
   )

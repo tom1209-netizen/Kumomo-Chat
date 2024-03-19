@@ -5,7 +5,10 @@
   padding: 20px;
   background-color: #F8FAFF;
 
-  // Seerch bar
+  .header {
+    margin-bottom: 30px;
+  }
+  // search bar
   .ant-input-outlined {
     border-radius: 20px;
     background-color: #EAF2FE;
@@ -21,11 +24,9 @@
     }
   }
 
-  .search-bar {
-    margin: 30px 0px 30px 0px;
-  }
-
   .chat-container {
+    margin-top: 30px;
+
     display: flex;
     flex-direction: column;
     gap: 20px;

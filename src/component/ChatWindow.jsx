@@ -11,6 +11,7 @@ import {
   SendOutlined
 } from "@ant-design/icons";
 import { Input } from "antd";
+import Message from "./Message";
 
 function ChatWindow({ userName, active }) {
   return (
@@ -32,6 +33,9 @@ function ChatWindow({ userName, active }) {
         </div>
       </div>
       <div className="msgs-container">
+        <Message messageContent={"Phúc Du"} messageTime={"0:12"} isUser={0}></Message>
+        <Message messageContent={"Phúc Du too"} messageTime={"0:12"} isUser={1}></Message>
+        <Message messageContent={"Câm your Mỏ please"} messageTime={"0:12"} isUser={0}></Message>
       </div>
       <div className="chat-bottom">
         <Input
