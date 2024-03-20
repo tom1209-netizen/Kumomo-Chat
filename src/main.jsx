@@ -11,15 +11,18 @@ import App from './App.jsx'
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import { AuthContextProvider } from './context/AuthContext.jsx';
+import { ChatContextProvider } from './context/ChatContext.jsx';
 import { useContext } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext.jsx';
 
+
 const RequireAuth = ({ children }) => {
+  const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    navigate("/login");
   }
 
   return children;
@@ -47,7 +50,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthContextProvider>
-    <React.StrictMode>
+    <ChatContextProvider>
+      <React.StrictMode>
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -61,6 +65,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           theme="dark"
         />
       <RouterProvider router={router} />
-    </React.StrictMode>
+      </React.StrictMode>
+    </ChatContextProvider>
   </AuthContextProvider>
 )

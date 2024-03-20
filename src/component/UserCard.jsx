@@ -1,11 +1,10 @@
-import user_profile from "../assets/img/user_profile.jpg"
 import "../scss/UserCard.scss"
 
-function UserCard({userName, time, latestMsg, active}) {
+function UserCard({userName, profileUrl, time, latestMsg, active, onClick}) {
   return (
-    <div className="user-card">
+    <div className="user-card" onClick={onClick}>
       <div className="user-profile">
-        <img src={user_profile} className='profile-img' alt="" />
+        <img src={profileUrl} className='profile-img' alt="" />
         {active && <div className="active-indicator" />}
       </div>
       <div className="info">

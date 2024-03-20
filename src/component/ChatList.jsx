@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { Input, AutoComplete } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import {
@@ -11,16 +11,42 @@ import {
   updateDoc,
   serverTimestamp,
   getDoc,
+  onSnapshot
 } from "firebase/firestore";
 import { db } from '../config/firebase-config';
 import UserCard from './UserCard';
 import "../scss/ChatList.scss"
 import { AuthContext } from '../context/AuthContext';
+import { ChatContext } from '../context/ChatContext';
 
 function ChatList() {
   const [userName, setUserName] = useState("")
   const [suggestions, setSuggestions] = useState([]);
+  const [chats, setChats] = useState([]);
+
   const { currentUser } = useContext(AuthContext);
+  const { dispatch } = useContext(ChatContext);
+
+  useEffect(() => {
+    const getChatList = () => {
+      const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+        setChats(doc.data());
+      });
+
+      return () => {
+        unsub();
+      };
+    };
+
+    currentUser.uid && getChatList();
+  }, [currentUser.uid]);
+
+  // TODO: Check this line carefully
+  const handleChatSelect = (user) => {
+    console.log(`user value in handleChatSelect ${user}`)
+    console.log(user)
+    dispatch({ type: "CHANGE_USER", payload: {user} });
+  }
 
   const handleSearch = async () => {
     if (userName.trim() !== "") {
@@ -53,8 +79,9 @@ function ChatList() {
     }
   }
 
-  const handleSelect = async (value, option) => {
+  const handleSearchSelect = async (value, option) => {
     // Use selectedUserDetails because setUser will run in the next render
+    setUserName(option.userDetails.displayName)
     const selectedUser = option.userDetails;
     const combinedId =
       currentUser.uid > selectedUser.uid
@@ -66,7 +93,6 @@ function ChatList() {
       if (!res.exists()) {
 
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
-
 
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [combinedId + ".userInfo"]: {
@@ -89,8 +115,6 @@ function ChatList() {
     } catch (err) {
       console.log(err)
     }
-
-    setUserName("")
   };
 
   return (
@@ -99,9 +123,10 @@ function ChatList() {
         <h1>Kumomo Chat</h1>
       </div>
       <AutoComplete
+        value={userName}
         onChange={(value) => setUserName(value)}
         options={suggestions}
-        onSelect={(value, option) => handleSelect(value, option)}
+        onSelect={(value, option) => handleSearchSelect(value, option)}
         onSearch={handleSearch}
         style={{ width: '100%' }}
       >
@@ -109,17 +134,29 @@ function ChatList() {
       </AutoComplete>
 
       <div className="chat-container">
-        <h1>Pinned</h1>
+        {/* TODO: Impliment the pinned chat feature */}
+
+        {/* <h1>Pinned</h1>
         <div className="pinned-container">
           <UserCard userName={"Taniyama Tom"} time={"9:36"} latestMsg={"Hi"} active={true} />
           <UserCard userName={"Taniyama Tom"} time={"9:36"} latestMsg={"Hi"} active={true} />
-        </div>
+        </div> */}
         <h1>All chat</h1>
         <div className="all-chats-container">
-          <UserCard userName={"Taniyama Tom"} time={"9:36"} latestMsg={"Hi"} active={true} />
-          <UserCard userName={"Taniyama Tom"} time={"9:36"} latestMsg={"Hi"} active={true} />
-          <UserCard userName={"Taniyama Tom"} time={"9:36"} latestMsg={"Hi"} active={true} />
-          <UserCard userName={"Taniyama Tom"} time={"9:36"} latestMsg={"Hi"} active={true} />
+          {/* Chat[1] because chat 0 is the uid and 1 is the data */}
+          {/* Look at the database for more details */}
+          {Object.entries(chats)?.sort((a,b)=>b[1].date - a[1].date).map((chat) => (
+            // TODO: Check
+            <UserCard 
+              key={chat[0]} 
+              userName={chat[1].userInfo.displayName} 
+              profileUrl={chat[1].userInfo.photoURL}
+              time={chat[1].timestamp?.time} 
+              latestMsg={chat[1].lastMessage?.content} 
+              active={true} 
+              onClick={() => handleChatSelect(chat[1].userInfo)}
+            />
+          ))}
         </div>
       </div>
     </div>

@@ -5,7 +5,6 @@ import Chat from "../assets/navbar_svg/Chat.svg?react"
 import Users from "../assets/navbar_svg/Users.svg?react"
 import Phone from "../assets/navbar_svg/Phone.svg?react"
 import Settings from "../assets/navbar_svg/Gear.svg?react"
-import user_profile from "../assets/img/user_profile.jpg"
 import logo from "../assets/img/kumomo_logo.png"
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase-config.js";
