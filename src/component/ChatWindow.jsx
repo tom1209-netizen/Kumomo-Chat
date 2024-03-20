@@ -30,6 +30,10 @@ function ChatWindow() {
   const { data } = useContext(ChatContext);
 
   console.log(`data in ChatWindow from ChatContext ${data}`)
+  console.log(data)
+  if (data?.user?.user) {
+    console.log(data.user.user.uid);
+  }
 
   const [content, setContent] = useState("");
   const [img, setImg] = useState(null);
@@ -39,7 +43,6 @@ function ChatWindow() {
     const timestamp_raw = event.toLocaleString('en-GB', { timezone });
     const [date, fullTime] = timestamp_raw.split(",").map((value) => value.trim());
 
-    // Remove the seconds from the time
     const [hours, minutes] = fullTime.split(":");
     const time = `${hours}:${minutes}`;
 
@@ -65,7 +68,6 @@ function ChatWindow() {
   }, [data.chatId]);
 
 
-  console.log(messages)
   const handleMessageSend = async () => {
     if (img) {
       const storageRef = ref(storage, uuid());
@@ -112,7 +114,7 @@ function ChatWindow() {
     });
 
     // FIXME: error here
-    await updateDoc(doc(db, "userChats", data.user.uid), {
+    await updateDoc(doc(db, "userChats", data.user.user.uid), {
       [data.chatId + ".lastMessage"]: {
         content: content,
       },
