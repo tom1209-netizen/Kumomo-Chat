@@ -70,10 +70,10 @@ function ChatWindow() {
     };
   }, [data.chatId]);
 
-
   // Logic for sending message
   const handleMessageSend = async () => {
     if (img) {
+      console.log(img)
       const storageRef = ref(storage, `users_sent_image/${currentUser.uid}/${uuid()}`);
 
       const uploadFile = img && img.length > 0 ? img[0].originFileObj : null;
@@ -100,6 +100,7 @@ function ChatWindow() {
               }),
             });
 
+            setImg(null);
             console.log('done');
           });
         }
@@ -125,14 +126,14 @@ function ChatWindow() {
     // since this project is still quite simple and I don't have much time, I will leave it like this for now
     await updateDoc(doc(db, "userChats", currentUser.uid), {
       [data.chatId + ".lastMessage"]: {
-        content: content,
+        content: content ? content : "Image",
       },
       [data.chatId + ".timestamp"]: getCurrentTime(),
     });
 
     await updateDoc(doc(db, "userChats", data.user.user.uid), {
       [data.chatId + ".lastMessage"]: {
-        content: content,
+        content: content ? content : "Image",
       },
       [data.chatId + ".timestamp"]: getCurrentTime(),
     });
