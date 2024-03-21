@@ -7,7 +7,6 @@ import {
   TeamOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
-import Chat from "../assets/navbar_svg/Chat.svg?react"
 import logo from "../assets/img/kumomo_logo.png"
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase-config.js";
