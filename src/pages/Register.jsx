@@ -6,9 +6,10 @@ import { auth, storage, db } from '../config/firebase-config';
 import { doc, setDoc } from "firebase/firestore";
 import { toast } from 'react-toastify';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import "../scss/Register.scss";
+import logo from "../assets/img/kumomo_logo.png"
 
 export default function Register() {
   const [form] = Form.useForm();
@@ -82,7 +83,11 @@ export default function Register() {
         initialValues={{ remember: true }}
         onFinish={handleOnSubmit}
       >
-        <h1 className='form-header'>Kumomo</h1>
+        <div className='form-header'>
+          <img className='logo' src={logo} alt="logo" />
+          <h1 className='heading'>Kumomo</h1>
+          <img className='logo' src={logo} alt="logo" />
+        </div>
         <Form.Item
           name="userName"
           rules={[{ required: true, message: 'Please input your Username!' }]}
@@ -129,6 +134,7 @@ export default function Register() {
             Sign Up
           </Button>
         </Form.Item>
+        <p>Already have account ? <Link to="/login">login</Link></p>
       </Form>
     </div>
   )

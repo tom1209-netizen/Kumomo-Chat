@@ -4,6 +4,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase-config.js";
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import logo from "../assets/img/kumomo_logo.png"
+
 import "../scss/Login.scss";
 
 export default function Login() {
@@ -26,7 +28,11 @@ export default function Login() {
         initialValues={{ remember: true }}
         onFinish={handleSubmit}
       >
-        <h1 className='form-header'>Kumomo</h1>
+        <div className='form-header'>
+          <img className='logo' src={logo} alt="logo" />
+          <h1 className='heading'>Kumomo</h1>
+          <img className='logo' src={logo} alt="logo" />
+        </div>
         <Form.Item
           name="email"
           rules={[{ required: true, message: 'Please input your email!' }]}
@@ -43,13 +49,6 @@ export default function Login() {
             type="password"
             placeholder="Password"
           />
-        </Form.Item>
-        <a className="login-form-forgot" href="">
-            Forgot password
-        </a>
-
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
         </Form.Item>
 
         <Form.Item className='sign-in-btn-container'>

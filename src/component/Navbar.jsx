@@ -1,8 +1,13 @@
 import "../scss/Navbar.scss"
 import { Switch } from 'antd';
-import { MoonFilled, SunFilled, LogoutOutlined } from '@ant-design/icons';
+import { 
+  MoonFilled, 
+  SunFilled, 
+  LogoutOutlined,
+  TeamOutlined,
+  WechatWorkOutlined
+} from '@ant-design/icons';
 import Chat from "../assets/navbar_svg/Chat.svg?react"
-import Users from "../assets/navbar_svg/Users.svg?react"
 import logo from "../assets/img/kumomo_logo.png"
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase-config.js";
@@ -26,10 +31,10 @@ function Navbar() {
       </div>
       <ul className='nav-items'>
         <li className='nav-item active'>
-          <Chat className='nav-icon'/>
+          <WechatWorkOutlined className='nav-icon'/>
         </li>
         <li className='nav-item'>
-          <Users className='nav-icon'/>
+          <TeamOutlined className='nav-icon'/>
         </li>
 
         {/* TODO: Impliment call functionality in the future */}
@@ -40,8 +45,8 @@ function Navbar() {
           <Settings />
         </li> */}
         
-        <li className='nav-item'>
-          <LogoutOutlined onClick={handleSignOut}/>
+        <li className='nav-item' onClick={handleSignOut}>
+          <LogoutOutlined className='nav-icon'/>
         </li>
       </ul>
 
