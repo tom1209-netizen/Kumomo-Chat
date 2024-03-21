@@ -1,5 +1,4 @@
 import "../scss/ChatWindow.scss";
-import "../scss/UserCard.scss";
 import {
   LinkOutlined,
   SmileOutlined,
@@ -180,13 +179,28 @@ function ChatWindow() {
   return (
     <div className="chat-window">
       <div className="chat-header">
-        <div className="user-profile">
-          <img src={data.user.user?.photoURL} className="profile-img" alt="" />
-        </div>
-        <div className="info">
-          <h1 className="name">{data.user.user?.displayName}</h1>
-        </div>
+        {data.user.user ? (
+          <>
+            <div className="user-profile">
+              <img src={data.user.user?.photoURL} className="profile-img" alt="" />
+            </div>
+            <div className="info">
+              <h1 className="name">{data.user.user?.displayName}</h1>
+            </div>
+          </>
+        ) : (
+          // Skeleton loader for user profile
+          <>
+            <div className="user-profile">
+              <div className="profile-img-skeleton skeleton-loader"></div>
+            </div>
+            <div className="info">
+              <div className="name-skeleton skeleton-loader"></div>
+            </div>
+          </>
+        )}
       </div>
+
 
       <div className="msgs-container">
         {messages.map((message) => (
