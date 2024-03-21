@@ -13,15 +13,7 @@ import "../scss/Register.scss";
 export default function Register() {
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); 
-
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
 
   const beforeImageUpload = file => {
     if (!["image/jpeg", "image/png"].includes(file.type)) {
@@ -37,7 +29,8 @@ export default function Register() {
   };
   
   const handleOnSubmit = async ({userName, email, password}) => {
-    setLoading(true);
+    const loadingToast = toast.loading("Signing up...");
+
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -69,17 +62,14 @@ export default function Register() {
               photoURL: downloadURL
             })
             await setDoc(doc(db, "userChats", res.user.uid), {});
-            toast.success("Sign up successful!");
+            toast.update(loadingToast, { render: "Sign up successful!", type: "success", isLoading: false, autoClose: 3000 });
             form.resetFields();
             navigate('/');
           });
         }
       );
     } catch (error) {
-      console.log(error);
-      toast.error('Sign up failed!');
-    } finally {
-      setLoading(false);
+      toast.update(loadingToast, { render: 'Sign up failed!', type: "error", isLoading: false, autoClose: 3000 });
     }
   }
 
@@ -118,8 +108,8 @@ export default function Register() {
           />
         </Form.Item>
 
-        {/* What the fuck normFile is used for ? */}
-        <Form.Item name="file" valuePropName="fileList" getValueFromEvent={normFile} className='image-upload-container'>
+        {/* TODO: Impliment many rule for form */}
+        <Form.Item name="file" valuePropName="fileList" className='image-upload-container'>
           <Upload 
             placeholder="Upload Image"
             beforeUpload={beforeImageUpload}

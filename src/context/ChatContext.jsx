@@ -4,9 +4,9 @@ import {
   useReducer,
 } from "react";
 import { AuthContext } from "./AuthContext.jsx";
+import PropTypes from 'prop-types';
 
 export const ChatContext = createContext();
-
 export const ChatContextProvider = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
   const INITIAL_STATE = {
@@ -17,12 +17,6 @@ export const ChatContextProvider = ({ children }) => {
   const chatReducer = (state, action) => {
     switch (action.type) {
       case "CHANGE_USER":
-        // Checker
-        console.log('Current user UID:', currentUser?.uid); 
-        console.log('Payload UID:', action.payload?.uid);
-        console.log("Payload fixed UID:", action.payload.user.uid)
-
-        // The problem is in payload UID !
         return {
           user: action.payload,
           chatId:
@@ -36,7 +30,6 @@ export const ChatContextProvider = ({ children }) => {
     }
   };
 
-
   const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
 
   return (
@@ -44,4 +37,8 @@ export const ChatContextProvider = ({ children }) => {
       {children}
     </ChatContext.Provider>
   );
+};
+
+ChatContextProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

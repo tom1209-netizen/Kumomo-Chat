@@ -9,8 +9,14 @@
     .content {
       background-color: #5B96F7; 
 
-      .text {
-        color: white;
+      .info {
+        .text {
+          color: white;
+        }
+
+        .img {
+          
+        }
       }
     }
   }
@@ -25,9 +31,21 @@
 
     position: relative;
 
-    .text {
-      color: #696969;
-      font-size: 14px;
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .text {
+        color: #696969;
+        font-size: 14px;
+      }
+
+      .modal-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
 
     .timestamp {

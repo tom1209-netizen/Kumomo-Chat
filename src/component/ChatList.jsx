@@ -41,7 +41,6 @@ function ChatList() {
     currentUser.uid && getChatList();
   }, [currentUser.uid]);
 
-  // TODO: Check this line carefully
   const handleChatSelect = (user) => {
     console.log(`user value in handleChatSelect ${user}`)
     console.log(user)
@@ -146,14 +145,12 @@ function ChatList() {
           {/* Chat[1] because chat 0 is the uid and 1 is the data */}
           {/* Look at the database for more details */}
           {Object.entries(chats)?.sort((a,b)=>b[1].date - a[1].date).map((chat) => (
-            // TODO: Check
             <UserCard 
               key={chat[0]} 
               userName={chat[1].userInfo.displayName} 
               profileUrl={chat[1].userInfo.photoURL}
               time={chat[1].timestamp?.time} 
               latestMsg={chat[1].lastMessage?.content} 
-              active={true} 
               onClick={() => handleChatSelect(chat[1].userInfo)}
             />
           ))}

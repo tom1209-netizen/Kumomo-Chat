@@ -1,20 +1,24 @@
 import "../scss/ChatWindow.scss";
 import "../scss/UserCard.scss";
 import {
-  DownOutlined,
-  PhoneOutlined,
-  SearchOutlined,
-  VideoCameraOutlined,
   LinkOutlined,
   SmileOutlined,
-  SendOutlined
+  SendOutlined,
 } from "@ant-design/icons";
-import { Input } from "antd";
+import { Input, Upload, Modal } from "antd";
 import Message from "./Message";
 import { ChatContext } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
-import { useContext, useState, useEffect } from "react";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { 
+  useContext, 
+  useState, 
+  useEffect 
+} from "react";
+import { 
+  getDownloadURL, 
+  ref, 
+  uploadBytesResumable 
+} from "firebase/storage";
 import {
   arrayUnion,
   doc,
@@ -23,20 +27,18 @@ import {
 } from "firebase/firestore";
 import { v4 as uuid } from 'uuid';
 import { db, storage } from "../config/firebase-config";
+import { toast } from "react-toastify";
 
 function ChatWindow() {
   const [messages, setMessages] = useState([]);
   const { currentUser } = useContext(AuthContext);
   const { data } = useContext(ChatContext);
 
-  console.log(`data in ChatWindow from ChatContext ${data}`)
-  console.log(data)
-  if (data?.user?.user) {
-    console.log(data.user.user.uid);
-  }
-
   const [content, setContent] = useState("");
   const [img, setImg] = useState(null);
+
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewVisible, setPreviewVisible] = useState(false);
 
   const getCurrentTime = ({ timezone = 'Asia/Ho_Chi_Minh' } = {}) => {
     const event = new Date(Date.now());
@@ -53,6 +55,7 @@ function ChatWindow() {
     return timestamp;
   }
 
+  // Logic for getting the chat from the database
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (documentSnapshot) => {
       if (documentSnapshot.exists()) {
@@ -68,18 +71,25 @@ function ChatWindow() {
   }, [data.chatId]);
 
 
+  // Logic for sending message
   const handleMessageSend = async () => {
     if (img) {
-      const storageRef = ref(storage, uuid());
+      const storageRef = ref(storage, `users_sent_image/${currentUser.uid}/${uuid()}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, img);
+      const uploadFile = img && img.length > 0 ? img[0].originFileObj : null;
+      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
 
-      uploadTask.on(
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+        }, 
         (error) => {
           console.log(error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            console.log('File available at', downloadURL);
             await updateDoc(doc(db, "chats", data.chatId), {
               messages: arrayUnion({
                 id: uuid(),
@@ -89,10 +99,17 @@ function ChatWindow() {
                 img: downloadURL,
               }),
             });
+
+            console.log('done');
           });
         }
       );
     } else {
+      if (content === "") {
+        toast.error("Message cannot be empty!");
+        return
+      } 
+
       await updateDoc(doc(db, "chats", data.chatId), {
         messages: arrayUnion({
           id: uuid(),
@@ -113,7 +130,6 @@ function ChatWindow() {
       [data.chatId + ".timestamp"]: getCurrentTime(),
     });
 
-    // FIXME: error here
     await updateDoc(doc(db, "userChats", data.user.user.uid), {
       [data.chatId + ".lastMessage"]: {
         content: content,
@@ -121,43 +137,88 @@ function ChatWindow() {
       [data.chatId + ".timestamp"]: getCurrentTime(),
     });
 
-    console.log("message reset")
     setContent("");
     setImg(null);
   };
+
+  // Logic for uploading image
+  const beforeImageUpload = (file) => {
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      toast.error(`${file.name} is not a valid image type, please choose a jpg or png file`);
+      return null;
+    }
+    return false;
+  };
+
+  const onImageChange = ({ fileList: newFileList }) => {
+    const latestFileList = newFileList.slice(-1);
+    setImg(latestFileList);
+
+    handlePreview(latestFileList[0].originFileObj);
+  };  
+
+  // Handle modal logic
+  const handlePreview = async (file) => {
+    const fileReader = new FileReader();
+    fileReader.onloadend = () => {
+      setPreviewImage(fileReader.result);
+      setPreviewVisible(true);
+    };
+    fileReader.readAsDataURL(file);
+  };
+
+  const handleCancelPreview = () => {
+    setPreviewVisible(false);
+  }
+
+  const handleOkPreview = () => {
+    setPreviewVisible(false);
+    handleMessageSend()
+  } 
 
   return (
     <div className="chat-window">
       <div className="chat-header">
         <div className="user-profile">
           <img src={data.user.user?.photoURL} className="profile-img" alt="" />
-          {1 && <div className="active-indicator" />}
         </div>
         <div className="info">
           <h1 className="name">{data.user.user?.displayName}</h1>
-          {1 && <p className="status">Active now</p>}
-        </div>
-        <div className="icons-container">
-          <VideoCameraOutlined />
-          <PhoneOutlined />
-          <SearchOutlined />
-          <DownOutlined />
         </div>
       </div>
 
       <div className="msgs-container">
-        {messages.map((m) => (
-          <Message message={m} key={m.id} />
+        {messages.map((message) => (
+          <Message message={message} key={message.id} />
         ))}
       </div>
 
       <div className="chat-bottom">
+        <Modal 
+          title="Picture Preview" 
+          open={previewVisible} 
+          onCancel={handleCancelPreview}
+          onOk={handleOkPreview}
+          okText="Send"
+          centered={true}
+        >
+          <img alt="preview" style={{ width: '100%' }} src={previewImage} />
+        </Modal>
         <Input
           value={content}
           className="search-bar"
           placeholder="Write a message..."
           onChange={(e) => setContent(e.target.value)}
-          prefix={<LinkOutlined style={{ color: "#709CE6", fontSize: "20px"}} />}
+          prefix={
+            <Upload
+              beforeUpload={beforeImageUpload}
+              onChange={onImageChange}
+              showUploadList={false}
+              maxCount={1}
+            >
+              <LinkOutlined style={{ color: "#709CE6", fontSize: "20px"}} />
+            </Upload>
+          }
           suffix={<SmileOutlined style={{ color: "#709CE6", fontSize: "20px"}} />}
           onPressEnter={handleMessageSend}
         />

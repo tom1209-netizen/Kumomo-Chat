@@ -1,11 +1,11 @@
 import "../scss/UserCard.scss"
+import PropTypes from 'prop-types';
 
-function UserCard({userName, profileUrl, time, latestMsg, active, onClick}) {
+function UserCard({userName, profileUrl, time, latestMsg, onClick}) {
   return (
     <div className="user-card" onClick={onClick}>
       <div className="user-profile">
         <img src={profileUrl} className='profile-img' alt="" />
-        {active && <div className="active-indicator" />}
       </div>
       <div className="info">
         <div className="name-time">
@@ -14,13 +14,18 @@ function UserCard({userName, profileUrl, time, latestMsg, active, onClick}) {
         </div>
         <div className="latest-msg-container">
           <p className='msg'>{latestMsg}</p>
-          <div className="num-container">
-            <p className='num'>2</p>
-          </div>
         </div>
       </div>
     </div>
   )
+}
+
+UserCard.propTypes = {
+  userName: PropTypes.string,
+  profileUrl: PropTypes.string,
+  time: PropTypes.string,
+  latestMsg: PropTypes.string,
+  onClick: PropTypes.func,
 }
 
 export default UserCard
