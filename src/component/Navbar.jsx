@@ -1,5 +1,5 @@
 import "../scss/Navbar.scss"
-import { Switch, Avatar } from 'antd';
+import { Switch, Avatar, Tooltip } from 'antd';
 import { 
   MoonFilled, 
   SunFilled, 
@@ -57,7 +57,9 @@ function Navbar() {
           defaultChecked
         />
         <div className="user-profile-container">
-          <Avatar size={50} icon={<UserOutlined />} src={currentUser.photoURL}/>
+          <Tooltip title={currentUser.displayName} color={"#5B96F7"}>
+            <Avatar size={50} icon={<UserOutlined />} src={currentUser.photoURL}/>
+          </Tooltip>
         </div>
       </div>
     </div>

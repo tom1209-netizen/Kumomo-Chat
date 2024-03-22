@@ -3,8 +3,9 @@ import {
   LinkOutlined,
   SmileOutlined,
   SendOutlined,
+  UserOutlined
 } from "@ant-design/icons";
-import { Input, Upload, Modal } from "antd";
+import { Input, Upload, Modal, Avatar } from "antd";
 import Message from "./Message";
 import { ChatContext } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
@@ -182,7 +183,7 @@ function ChatWindow() {
         {data.user.user ? (
           <>
             <div className="user-profile">
-              <img src={data.user.user?.photoURL} className="profile-img" alt="" />
+              <Avatar size={50} icon={<UserOutlined />} src={data.user.user?.photoURL}/>
             </div>
             <div className="info">
               <h1 className="name">{data.user.user?.displayName}</h1>
