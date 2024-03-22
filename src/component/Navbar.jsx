@@ -1,11 +1,12 @@
 import "../scss/Navbar.scss"
-import { Switch } from 'antd';
+import { Switch, Avatar } from 'antd';
 import { 
   MoonFilled, 
   SunFilled, 
   LogoutOutlined,
   TeamOutlined,
-  WechatWorkOutlined
+  WechatWorkOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import logo from "../assets/img/kumomo_logo.png"
 import { signOut } from "firebase/auth";
@@ -35,7 +36,6 @@ function Navbar() {
         <li className='nav-item'>
           <TeamOutlined className='nav-icon'/>
         </li>
-
         {/* TODO: Impliment call functionality in the future */}
         {/* <li className='nav-item'>
           <Phone />
@@ -57,7 +57,7 @@ function Navbar() {
           defaultChecked
         />
         <div className="user-profile-container">
-          <img className='user-profile' src={currentUser.photoURL} alt="" />
+          <Avatar size={50} icon={<UserOutlined />} src={currentUser.photoURL}/>
         </div>
       </div>
     </div>

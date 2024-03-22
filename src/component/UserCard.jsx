@@ -1,11 +1,13 @@
 import "../scss/UserCard.scss"
+import { Avatar } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 
 function UserCard({userName, profileUrl, time, latestMsg, onClick}) {
   return (
     <div className="user-card" onClick={onClick}>
       <div className="user-profile">
-        <img src={profileUrl} className='profile-img' alt="" />
+        <Avatar size={50} icon={<UserOutlined />} src={profileUrl}/>
       </div>
       <div className="info">
         <div className="name-time">

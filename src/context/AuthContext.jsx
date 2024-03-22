@@ -41,7 +41,7 @@ export const RequireAuth = ({ children }) => {
     }
   }, [currentUser, navigate]);
 
-  return children || null;
+  return currentUser ? children : null;
 };
 
 RequireAuth.propTypes = {

@@ -40,6 +40,7 @@ function Message({ message }) {
       
       toast.update(loadingToast, { render: "Gemini responsded!", type: "success", isLoading: false, autoClose: 3000 })
     } catch (error) {
+      console.log(`Error getting response: ${error}`)
       toast.update(loadingToast, { render: "Error getting response.", type: "error", isLoading: false, autoClose: 3000 });
     }
   }
