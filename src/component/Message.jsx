@@ -21,7 +21,7 @@ function Message({ message }) {
   }, [message]);
 
   async function geminiRun() {
-    const userLanguage = message.userLanguage ? message.userLanguage : 'english';
+    const userLanguage = message.userLanguage ? message.userLanguage : 'vietnamese';
     const loadingToast = toast.loading("Getting gemini response...");
     const prompt = `Imagine you are an advanced AI language teacher specialized in deconstructing any given input language into its 
       fundamental grammatical structure, syntax, and vocabulary. Your objective is to analyze sentences or phrases presented to you, identify 
