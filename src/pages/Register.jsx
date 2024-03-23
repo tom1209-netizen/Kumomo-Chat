@@ -90,21 +90,34 @@ export default function Register() {
         </div>
         <Form.Item
           name="userName"
-          rules={[{ required: true, message: 'Please input your Username!' }]}
+          rules={[
+            { required: true, message: 'Please input your Username!' },
+            { min: 3, message: "username must be at least 3 characters"},
+            { max: 8, message: "username must be at most 8 characters"},
+          ]}
+          hasFeedback
         >
           <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
         </Form.Item>
 
         <Form.Item
           name="email"
-          rules={[{ required: true, message: 'Please input your email!' }]}
+          rules={[
+            { required: true, message: 'Please input your email!' },
+            { type: "email", message: "Please enter a valid email" },
+          ]}
+          hasFeedback
         >
           <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
         </Form.Item>
 
         <Form.Item
           name="password"
-          rules={[{ required: true, message: 'Please input your Password!' }]}
+          rules={[
+            { required: true, message: 'Please input your Password!' },
+            { min: 6, message: "password must be at least 6 characters"},
+          ]}
+          hasFeedback
         >
           <Input
             prefix={<LockOutlined className="site-form-item-icon" />}
