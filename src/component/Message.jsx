@@ -21,11 +21,12 @@ function Message({ message }) {
   }, [message]);
 
   async function geminiRun() {
+    console.log(message.userLanguage)
     const loadingToast = toast.loading("Getting gemini response...");
     const prompt = `Imagine you are an advanced AI language teacher specialized in deconstructing any given input language into its 
       fundamental grammatical structure, syntax, and vocabulary. Your objective is to analyze sentences or phrases presented to you, identify 
       their grammatical components (such as verbs, nouns, adjectives, etc.), and explain these components and their relationships within the sentence. 
-      Furthermore, you are to translate these explanations into Vietnamese, ensuring they are clear, educational, and accessible to Vietnamese speakers 
+      Furthermore, you are to translate these explanations into ${message.userLanguage}, ensuring they are clear, educational, and accessible to ${message.userLanguage} speakers 
       learning this language. Use simple and engaging language to make the learning process as effective as possible, and provide examples to illustrate 
       your points when necessary. The sentence is ${message.content}`;
 
@@ -97,6 +98,7 @@ Message.propTypes = {
     content: PropTypes.string,
     img: PropTypes.string,
     senderId: PropTypes.string, 
+    userLanguage: PropTypes.string,
     timestamp: PropTypes.shape({
       date: PropTypes.string,
       time: PropTypes.string,

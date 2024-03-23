@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react'
-import { Input, AutoComplete } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Input, AutoComplete, Avatar } from 'antd';
+import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import {
   collection,
   query,
@@ -61,8 +61,8 @@ function ChatList() {
           users.push({
             value: doc.id, 
             label: (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={doc.data().photoURL} alt="" style={{ width: 32, height: 32, marginRight: 8, borderRadius: '50%' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: "10px"}}>
+                <Avatar size={30} icon={<UserOutlined />} src={doc.data().photoURL}/>
                 {doc.data().displayName}
               </div>
             ), 

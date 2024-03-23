@@ -1,4 +1,4 @@
-import { Form, Input, Button, Upload } from 'antd';
+import { Form, Input, Button, Upload, Select } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, PlusOutlined } from '@ant-design/icons';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -14,6 +14,7 @@ import logo from "../assets/img/kumomo_logo.png"
 export default function Register() {
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
+  const [language, setLanguage] = useState(null);
   const navigate = useNavigate(); 
 
   const beforeImageUpload = file => {
@@ -63,14 +64,17 @@ export default function Register() {
             console.log('File available at', downloadURL);
             await updateProfile(res.user, {
               displayName: userName,
-              photoURL: downloadURL
+              photoURL: downloadURL,
             })
+
             await setDoc(doc(db, "users", res.user.uid), {
               uid: res.user.uid,
               displayName: userName,
               email: email,
-              photoURL: downloadURL
+              photoURL: downloadURL,
+              language: language,
             })
+
             await setDoc(doc(db, "userChats", res.user.uid), {});
             toast.update(loadingToast, { render: "Sign up successful!", type: "success", isLoading: false, autoClose: 3000 });
             form.resetFields();
@@ -82,6 +86,40 @@ export default function Register() {
       toast.update(loadingToast, { render: 'Sign up failed!', type: "error", isLoading: false, autoClose: 3000 });
     }
   }
+
+  // Language select logic
+  const languageOptions = [
+    { value: 'vietnamese', label: 'Vietnamese' },
+    { value: 'japanese', label: 'Japanese' },
+    { value: 'english', label: 'English' },
+    { value: 'spanish', label: 'Spanish' },
+    { value: 'french', label: 'French' },
+    { value: 'german', label: 'German' },
+    { value: 'chinese', label: 'Chinese' },
+    { value: 'russian', label: 'Russian' },
+    { value: 'korean', label: 'Korean' },
+    { value: 'italian', label: 'Italian' },
+    { value: 'portuguese', label: 'Portuguese' },
+    { value: 'arabic', label: 'Arabic' },
+    { value: 'dutch', label: 'Dutch' },
+    { value: 'swedish', label: 'Swedish' },
+    { value: 'norwegian', label: 'Norwegian' },
+    { value: 'turkish', label: 'Turkish' },
+    { value: 'polish', label: 'Polish' },
+    { value: 'finnish', label: 'Finnish' },
+    { value: 'danish', label: 'Danish' },
+    { value: 'hindi', label: 'Hindi' },
+    { value: 'thai', label: 'Thai' },
+    { value: 'indonesian', label: 'Indonesian' },
+    { value: 'greek', label: 'Greek' },
+  ];
+  
+  const onChange = (value) => {
+    setLanguage(value);
+  };
+  
+  const filterOption = (input, option) =>
+    (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
   return (
     <div className="form-container">
@@ -133,6 +171,23 @@ export default function Register() {
             type="password"
             placeholder="Password"
           />
+        </Form.Item>
+
+        <Form.Item
+          name="language"
+          rules={[
+            { required: true, message: 'Please choose your language!' },
+          ]}
+          hasFeedback
+        >
+            <Select
+              showSearch
+              placeholder="Select a language"
+              optionFilterProp="children"
+              onChange={onChange}
+              filterOption={filterOption}
+              options={languageOptions}
+            />
         </Form.Item>
 
         {/* TODO: Impliment many rule for form */}

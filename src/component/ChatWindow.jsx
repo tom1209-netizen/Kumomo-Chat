@@ -73,7 +73,6 @@ function ChatWindow() {
   // Logic for sending message
   const handleMessageSend = async () => {
     if (img) {
-      console.log(img)
       const storageRef = ref(storage, `users_sent_image/${currentUser.uid}/${uuid()}`);
 
       const uploadFile = img && img.length > 0 ? img[0].originFileObj : null;
@@ -90,11 +89,13 @@ function ChatWindow() {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             console.log('File available at', downloadURL);
+            console.log(currentUser.language);
             await updateDoc(doc(db, "chats", data.chatId), {
               messages: arrayUnion({
                 id: uuid(),
                 content: content,
                 senderId: currentUser.uid,
+                userLanguage: data.user.user.language,
                 timestamp: getCurrentTime(),
                 img: downloadURL,
               }),
@@ -111,11 +112,14 @@ function ChatWindow() {
         return
       } 
 
+      console.log(data.user.user)
+      console.log(data.user.user.language);
       await updateDoc(doc(db, "chats", data.chatId), {
         messages: arrayUnion({
           id: uuid(),
           content: content,
           senderId: currentUser.uid,
+          userLanguage: data.user.user.language,
           timestamp: getCurrentTime(),
         }),
       });
