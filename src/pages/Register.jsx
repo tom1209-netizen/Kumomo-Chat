@@ -24,6 +24,14 @@ export default function Register() {
     return false;
   };
 
+  const normFile = (e) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
   const onImageChange = ({ fileList: newFileList }) => {
     const latestFileList = newFileList.slice(-1);
     setFile(latestFileList);
@@ -39,6 +47,7 @@ export default function Register() {
       const storageRef = ref(storage, `user_profile_picture/${userName}-${date}`);
 
       const uploadFile = file && file.length > 0 ? file[0].originFileObj : null;
+      console.log(uploadFile);
       const uploadTask = uploadBytesResumable(storageRef, uploadFile);
 
       uploadTask.on('state_changed', 
@@ -127,7 +136,11 @@ export default function Register() {
         </Form.Item>
 
         {/* TODO: Impliment many rule for form */}
-        <Form.Item name="file" valuePropName="fileList" className='image-upload-container'>
+        <Form.Item 
+          name="file" 
+          valuePropName="fileList" 
+          className='image-upload-container'
+          getValueFromEvent={normFile}>
           <Upload 
             placeholder="Upload Image"
             beforeUpload={beforeImageUpload}
