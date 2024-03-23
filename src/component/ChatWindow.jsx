@@ -95,7 +95,6 @@ function ChatWindow() {
                 id: uuid(),
                 content: content,
                 senderId: currentUser.uid,
-                userLanguage: data.user.user.language,
                 timestamp: getCurrentTime(),
                 img: downloadURL,
               }),
@@ -112,14 +111,17 @@ function ChatWindow() {
         return
       } 
 
-      console.log(data.user.user)
-      console.log(data.user.user.language);
+
+      console.log(`data ${data}`)
+      console.log(data)
+      console.log(`currentUser ${currentUser}`)
+      console.log(currentUser)
+        
       await updateDoc(doc(db, "chats", data.chatId), {
         messages: arrayUnion({
           id: uuid(),
           content: content,
           senderId: currentUser.uid,
-          userLanguage: data.user.user.language,
           timestamp: getCurrentTime(),
         }),
       });

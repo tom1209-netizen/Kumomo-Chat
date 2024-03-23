@@ -62,7 +62,7 @@ function ChatList() {
             value: doc.id, 
             label: (
               <div style={{ display: 'flex', alignItems: 'center', gap: "10px"}}>
-                <Avatar size={30} icon={<UserOutlined />} src={doc.data().photoURL}/>
+                <Avatar size={40} icon={<UserOutlined />} src={doc.data().photoURL}/>
                 {doc.data().displayName}
               </div>
             ), 
