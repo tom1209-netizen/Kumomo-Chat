@@ -28,6 +28,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { db, storage } from "../config/firebase-config";
 import { toast } from "react-toastify";
+import { useLanguage } from "../context/LanguageContext";
 
 function ChatWindow() {
   const [messages, setMessages] = useState([]);
@@ -39,6 +40,8 @@ function ChatWindow() {
 
   const [previewImage, setPreviewImage] = useState("");
   const [previewVisible, setPreviewVisible] = useState(false);
+  const currentLanguage = useLanguage();
+  console.log(currentLanguage)
 
   const getCurrentTime = ({ timezone = 'Asia/Ho_Chi_Minh' } = {}) => {
     const event = new Date(Date.now());
@@ -211,7 +214,7 @@ function ChatWindow() {
 
       <div className="msgs-container">
         {messages.map((message) => (
-          <Message message={message} key={message.id} />
+          <Message message={message} key={message.id} currentLanguage={currentLanguage}/>
         ))}
       </div>
 

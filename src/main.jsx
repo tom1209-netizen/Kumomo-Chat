@@ -12,6 +12,7 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import { AuthContextProvider, RequireAuth } from './context/AuthContext.jsx';
 import { ChatContextProvider } from './context/ChatContext.jsx';
+import { LanguageProvider } from './context/LanguageContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -36,21 +37,23 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthContextProvider>
     <ChatContextProvider>
-      <React.StrictMode>
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
-      <RouterProvider router={router} />
-      </React.StrictMode>
+      <LanguageProvider>
+        <React.StrictMode>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        <RouterProvider router={router} />
+        </React.StrictMode>
+      </LanguageProvider>
     </ChatContextProvider>
   </AuthContextProvider>
 )
