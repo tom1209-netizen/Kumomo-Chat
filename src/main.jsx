@@ -1,23 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './scss/index.scss'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './scss/index.scss';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Home from './pages/Home.jsx'
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
-import { AuthContextProvider, RequireAuth } from './context/AuthContext.jsx';
-import { ChatContextProvider } from './context/ChatContext.jsx';
-import { LanguageProvider } from './context/LanguageContext.jsx';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthContextProvider, RequireAuth } from './context/AuthContext';
+import { ChatContextProvider } from './context/ChatContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 const router = createBrowserRouter([
   {
     index: true,
-    path: "/",
+    path: '/',
     element: (
       <RequireAuth>
         <Home />
@@ -25,11 +22,11 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/login",
+    path: '/login',
     element: <Login />,
   },
   {
-    path: "/register",
+    path: '/register',
     element: <Register />,
   },
 ]);
@@ -51,9 +48,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             pauseOnHover
             theme="dark"
           />
-        <RouterProvider router={router} />
+          <RouterProvider router={router} />
         </React.StrictMode>
       </LanguageProvider>
     </ChatContextProvider>
-  </AuthContextProvider>
-)
+  </AuthContextProvider>,
+);

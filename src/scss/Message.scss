@@ -5,9 +5,9 @@
 
   &.user-msg {
     justify-content: flex-end;
-    
+
     .content {
-      background-color: #5B96F7; 
+      background-color: #5b96f7;
 
       .info {
         .text {
@@ -15,7 +15,6 @@
         }
 
         .img {
-          
         }
       }
     }
@@ -24,7 +23,7 @@
   .content {
     padding: 12px 20px;
 
-    background-color: white; 
+    background-color: white;
     border-radius: 16px;
 
     max-width: 50%;
@@ -39,6 +38,7 @@
       .text {
         color: #696969;
         font-size: 14px;
+        text-wrap: pretty;
       }
 
       .modal-btn {
@@ -51,7 +51,7 @@
     .timestamp {
       color: #696969;
       font-size: 12px;
-      
+
       position: absolute;
       bottom: -15px;
       right: -10px;
