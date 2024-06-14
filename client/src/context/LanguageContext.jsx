@@ -15,7 +15,7 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     if (!currentUser || !currentUser.uid) {
-      console.log("No current user found");
+      console.log('No current user found');
       return;
     }
 
@@ -24,11 +24,11 @@ export const LanguageProvider = ({ children }) => {
         setLanguage(documentSnapshot.data().language);
         console.log(documentSnapshot.data().language);
       } else {
-        console.log("No language to select!");
+        console.log('No language to select!');
       }
     });
     return () => {
-      unSub(); 
+      unSub();
     };
   }, [currentUser]);
 

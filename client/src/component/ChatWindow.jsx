@@ -88,7 +88,7 @@ function ChatWindow() {
         'state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
+          console.log(`Upload is ${progress}% done`);
         },
         (error) => {
           console.log(error);
@@ -130,17 +130,17 @@ function ChatWindow() {
     // since this project is still quite simple and I don't have much time
     // I will leave it like this for now
     await updateDoc(doc(db, 'userChats', currentUser.uid), {
-      [data.chatId + '.lastMessage']: {
+      [`${data.chatId}.lastMessage`]: {
         content: content || 'Image',
       },
-      [data.chatId + '.timestamp']: getCurrentTime()
+      [`${data.chatId}.timestamp`]: getCurrentTime(),
     });
 
     await updateDoc(doc(db, 'userChats', data.user.user.uid), {
-      [data.chatId + '.lastMessage']: {
+      [`${data.chatId}.lastMessage`]: {
         content: content || 'Image',
       },
-      [data.chatId + '.timestamp']: getCurrentTime()
+      [`${data.chatId}.timestamp`]: getCurrentTime(),
     });
 
     setContent('');

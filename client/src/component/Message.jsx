@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import Markdown from 'react-markdown';
 import { AuthContext } from '../context/AuthContext';
-import { model } from '../config/gemini-config';
+import model from '../config/gemini-config';
 import '../scss/Message.scss';
 
 const { Paragraph } = Typography;

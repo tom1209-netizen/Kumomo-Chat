@@ -2,9 +2,9 @@ import {
   createContext,
   useContext,
   useReducer,
-} from "react";
-import { AuthContext } from "./AuthContext.jsx";
+} from 'react';
 import PropTypes from 'prop-types';
+import { AuthContext } from './AuthContext';
 
 export const ChatContext = createContext();
 export const ChatContextProvider = ({ children }) => {
@@ -16,7 +16,7 @@ export const ChatContextProvider = ({ children }) => {
 
   const chatReducer = (state, action) => {
     switch (action.type) {
-      case "CHANGE_USER":
+      case 'CHANGE_USER':
         return {
           user: action.payload,
           chatId:

@@ -1,13 +1,14 @@
-import { createContext, useEffect, useState } from "react";
-import { auth } from "../config/firebase-config.js";
-import { onAuthStateChanged } from "firebase/auth";
+import {
+  createContext, useEffect, useState, useContext,
+} from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
 import PropTypes from 'prop-types';
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../config/firebase-config';
 
 export const AuthContext = createContext();
 
-export const AuthContextProvider = ({ children }) => {
+export function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
@@ -25,24 +26,24 @@ export const AuthContextProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 AuthContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export const RequireAuth = ({ children }) => {
+export function RequireAuth({ children }) {
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
     if (!currentUser) {
-      navigate("/login");
+      navigate('/login');
     }
   }, [currentUser, navigate]);
 
   return currentUser ? children : null;
-};
+}
 
 RequireAuth.propTypes = {
   children: PropTypes.node.isRequired,
