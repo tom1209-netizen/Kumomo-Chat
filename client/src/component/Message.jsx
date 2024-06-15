@@ -22,8 +22,7 @@ const { Paragraph } = Typography;
 
 function Message({ message }) {
   const { auth } = useAuth();
-  const { currentLanguage } = useLanguage();
-  console.log(currentLanguage)
+  const currentLanguage = useLanguage();
   const currentUser = auth.user;
   const [answer, setAnswer] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);

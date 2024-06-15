@@ -7,14 +7,13 @@ const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState(null);
+  const [language, setLanguage] = useState('vietnamese');
   const { auth } = useAuth();
-  console.log(language);
 
   useEffect(() => {
     const fetchLanguage = async () => {
       if (!auth.user || !auth.user.id) {
-        console.log('No current user found');
+        console.error('No current user found');
         return;
       }
 
@@ -24,7 +23,7 @@ export function LanguageProvider({ children }) {
           const data = await response.json();
           setLanguage(data.language);
         } else {
-          console.log('No language to select!');
+          console.error('No language to select!');
         }
       } catch (error) {
         console.error('Error fetching language:', error);
