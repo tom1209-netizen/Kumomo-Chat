@@ -1,7 +1,7 @@
 import '../scss/ChatWindow.scss';
 import {
   LinkOutlined,
-  SmileOutlined,
+  CustomerServiceOutlined,
   SendOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -21,18 +21,33 @@ import { ChatContext } from '../context/ChatContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Message from './Message';
+import AudioRecorder from './AudioRecorder';
+import useWindowDimensions from '../hooks/useWindowDimensions';
 
 function ChatWindow() {
+  // All messages
   const [messages, setMessages] = useState([]);
+
+  // User data
   const { auth } = useAuth();
   const { data } = useContext(ChatContext);
 
+  // Input state
   const [content, setContent] = useState('');
   const [img, setImg] = useState(null);
 
+  // Image state
   const [previewImage, setPreviewImage] = useState('');
   const [previewVisible, setPreviewVisible] = useState(false);
+
+  // Audio state
+  const [isAudioModalVisible, setIsAudioModalVisible] = useState(false);
+
+  // Current language
   const currentLanguage = useLanguage();
+
+  // Custom hook to get current window width
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -84,7 +99,8 @@ function ChatWindow() {
     setImg(null);
   };
 
-  const handlePreview = async (file) => {
+  // Handle image modal
+  const handleImagePreview = async (file) => {
     const fileReader = new FileReader();
     fileReader.onloadend = () => {
       setPreviewImage(fileReader.result);
@@ -93,15 +109,16 @@ function ChatWindow() {
     fileReader.readAsDataURL(file);
   };
 
-  const handleCancelPreview = () => {
+  const handleImageCancelPreview = () => {
     setPreviewVisible(false);
   };
 
-  const handleOkPreview = () => {
+  const handleImageOkPreview = () => {
     setPreviewVisible(false);
     handleMessageSend();
   };
 
+  // Image checking
   const beforeImageUpload = (file) => {
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
       toast.error(`${file.name} is not a valid image type, please choose a jpg or png file`);
@@ -114,7 +131,20 @@ function ChatWindow() {
     const latestFileList = newFileList.slice(-1);
     setImg(latestFileList);
 
-    handlePreview(latestFileList[0].originFileObj);
+    handleImagePreview(latestFileList[0].originFileObj);
+  };
+
+  // Handle audio modal
+  const showAudioModal = () => {
+    setIsAudioModalVisible(true);
+  };
+
+  const handleAudioOk = () => {
+    setIsAudioModalVisible(false);
+  };
+
+  const handleAudioCancel = () => {
+    setIsAudioModalVisible(false);
   };
 
   return (
@@ -154,8 +184,8 @@ function ChatWindow() {
         <Modal
           title="Picture Preview"
           open={previewVisible}
-          onCancel={handleCancelPreview}
-          onOk={handleOkPreview}
+          onCancel={handleImageCancelPreview}
+          onOk={handleImageOkPreview}
           okText="Send"
           centered
         >
@@ -176,13 +206,30 @@ function ChatWindow() {
               <LinkOutlined style={{ color: '#709CE6', fontSize: '20px' }} />
             </Upload>
           )}
-          suffix={<SmileOutlined style={{ color: '#709CE6', fontSize: '20px' }} />}
+          suffix={(
+            <CustomerServiceOutlined
+              style={{ color: '#709CE6', fontSize: '20px' }}
+              onClick={showAudioModal}
+            />
+          )}
           onPressEnter={handleMessageSend}
         />
         <div className="send-block" onClick={handleMessageSend}>
           <SendOutlined style={{ color: '#FFFFFF', fontSize: '20px' }} />
         </div>
       </div>
+      <Modal
+        title="Voice Recorder"
+        visible={isAudioModalVisible}
+        onOk={handleAudioOk}
+        onCancel={handleAudioCancel}
+        footer={null}
+        centered
+        style={{ width: `${80 * width / 100}px`, minWidth: `${80 * width / 100}px` }}
+        bodyStyle={{ display: 'flex', justifyContent: 'center' }} // Center the content horizontally
+      >
+        <AudioRecorder />
+      </Modal>
     </div>
   );
 }
