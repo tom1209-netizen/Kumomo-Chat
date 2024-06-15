@@ -1,5 +1,6 @@
 import express from 'express';
 import { getChatMessages, sendMessage, getUserChats, createChat } from '../controllers/chatController.js';
+
 import multer from 'multer';
 
 const router = express.Router();

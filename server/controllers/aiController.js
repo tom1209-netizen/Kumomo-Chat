@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { FormData, File } from 'formdata-node';
+import Tesseract from 'tesseract.js';
 import gemini from "../config/gemini.js"
 
 export const translateAudio = async (req, res) => {
@@ -100,4 +101,55 @@ export const translateText = async (req, res) => {
     }
   }
 
-// TODO: translate image
+  export const translateImage = async (req, res) => {
+    const { imageURL, language } = req.body;
+  
+    if (!imageURL) {
+      return res.status(400).send('No image URL provided!');
+    }
+  
+    try {
+      // Fetch the image file from the URL
+      const imageResponse = await fetch(imageURL);
+      if (!imageResponse.ok) {
+        throw new Error('Failed to fetch image file');
+      }
+      const imageBuffer = await imageResponse.buffer();
+  
+      // Use Tesseract.js to extract text from the image
+      const ocrResult = await Tesseract.recognize(imageBuffer, 'eng');
+      const extractedText = ocrResult.data.text.trim();
+  
+      // Translate the extracted text using GPT-4
+      const translationMessages = [
+        { role: 'system', content: `Translate the following text to ${language}:` },
+        { role: 'user', content: extractedText }
+      ];
+      
+      const translationResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPEN_AI_API}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: translationMessages,
+          max_tokens: 1000,
+        }),
+      });
+  
+      if (!translationResponse.ok) {
+        const error = await translationResponse.json();
+        throw new Error(error.error.message);
+      }
+  
+      const translationData = await translationResponse.json();
+      const translatedText = translationData.choices[0].message.content.trim();
+  
+      res.status(200).json({ extractedText, translatedText });
+    } catch (error) {
+      console.error('Error extracting and translating text:', error);
+      res.status(500).send('Error translating image.');
+    }
+  };

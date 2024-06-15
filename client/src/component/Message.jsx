@@ -90,6 +90,35 @@ function Message({ message }) {
     }
   };
 
+  const fetchTranslateImage = async () => {
+    const loadingToast = toast.loading('Translating image...');
+    try {
+      const response = await fetch('http://localhost:3003/api/ai/translate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ imageURL: message.img, language: currentLanguage }),
+      });
+      const result = await response.json();
+      setAnswer(result.translatedText);
+
+      toast.update(loadingToast, {
+        render: 'Image translated!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.update(loadingToast, {
+        render: 'Error translating image.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
+
   const handleCancelModal = () => {
     setIsModalOpen(false);
     setAnswer('');
@@ -99,6 +128,8 @@ function Message({ message }) {
     setIsModalOpen(true);
     if (message.audio) {
       fetchTranslateAudio();
+    } else if (message.img) {
+      fetchTranslateImage();
     } else {
       fetchTranslateText();
     }
@@ -109,7 +140,22 @@ function Message({ message }) {
       <div className="content">
         <div className="info">
           <p className="text">{message.content}</p>
-          {message.img && <Image width={200} className="img" src={message.img} alt="" />}
+          {message.img && (
+            <>
+              <Image width={200} className="img" src={message.img} alt="" />
+              <Button
+                shape="circle"
+                size="small"
+                type="primary"
+                danger
+                className="modal-btn"
+                onClick={handleShowBtn}
+              >
+                <QuestionOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />
+              </Button>
+            </>
+          )}
+
           {!message.img && !message.audio && (
             <Button
               shape="circle"
@@ -122,6 +168,7 @@ function Message({ message }) {
               <QuestionOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />
             </Button>
           )}
+
           {message.audio && (
             <>
               <audio controls>
@@ -141,7 +188,7 @@ function Message({ message }) {
             </>
           )}
           <Modal
-            title="Gemini Response"
+            title="Translation"
             open={isModalOpen}
             onOk={handleCancelModal}
             onCancel={handleCancelModal}
