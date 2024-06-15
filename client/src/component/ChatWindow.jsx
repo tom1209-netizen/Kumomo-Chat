@@ -79,7 +79,7 @@ function ChatWindow() {
       formData.append('file', img[0].originFileObj);
     }
 
-    if (audioBlob) {
+    if (audioBlob && audioBlob.length > 0) {
       formData.append('file', audioBlob, 'recording.wav');
     }
 

@@ -11,6 +11,6 @@ const upload = multer({ storage });
 router.post('/register', upload.single('file'), registerUser);
 router.post('/login', loginUser);
 router.get('/search', searchUsers);
-router.get('/user/:userId/language', getUserLanguage)
+router.get('/language/:userId', getUserLanguage)
 
 export default router;

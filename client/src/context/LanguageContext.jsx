@@ -9,6 +9,7 @@ export const useLanguage = () => useContext(LanguageContext);
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(null);
   const { auth } = useAuth();
+  console.log(language);
 
   useEffect(() => {
     const fetchLanguage = async () => {
@@ -18,7 +19,7 @@ export function LanguageProvider({ children }) {
       }
 
       try {
-        const response = await fetch(`http://localhost:3003/api/users/${auth.user.id}/language`);
+        const response = await fetch(`http://localhost:3003/api/users/language/${auth.user.id}`);
         if (response.ok) {
           const data = await response.json();
           setLanguage(data.language);
@@ -31,7 +32,7 @@ export function LanguageProvider({ children }) {
     };
 
     fetchLanguage();
-  }, [auth]);
+  }, [auth.user?.id]);
 
   return <LanguageContext.Provider value={language}>{children}</LanguageContext.Provider>;
 }

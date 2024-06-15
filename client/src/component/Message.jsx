@@ -1,8 +1,8 @@
 import {
-  useContext,
   useRef,
   useEffect,
   useState,
+  useContext,
 } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
@@ -15,15 +15,17 @@ import {
 } from 'antd';
 import Markdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
-import model from '../config/gemini-config';
+import { useLanguage } from '../context/LanguageContext';
 import '../scss/Message.scss';
 
 const { Paragraph } = Typography;
 
-function Message({ message, currentLanguage }) {
+function Message({ message }) {
   const { auth } = useAuth();
+  const { currentLanguage } = useLanguage();
+  console.log(currentLanguage)
   const currentUser = auth.user;
-  const [geminiResponse, setGeminiResponse] = useState('');
+  const [answer, setAnswer] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const ref = useRef();
 
@@ -31,59 +33,85 @@ function Message({ message, currentLanguage }) {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   }, [message]);
 
-  async function geminiRun() {
-    const loadingToast = toast.loading('Getting gemini response...');
-    const prompt = `Imagine you are an advanced AI language teacher specialized in deconstructing any given input language into its 
-      fundamental grammatical structure, syntax, and vocabulary. Your objective is to analyze sentences or phrases presented to you, identify 
-      their grammatical components (such as verbs, nouns, adjectives, etc.), and explain these components and their relationships within the sentence. 
-      Furthermore, you are to translate these explanations into ${currentLanguage}, ensuring they are clear, educational, and accessible to ${currentLanguage} speakers 
-      learning this language. Use simple and engaging language to make the learning process as effective as possible, and provide examples to illustrate 
-      your points when necessary. The sentence is ${message.content}`;
-
+  const fetchTranslateText = async () => {
+    const loadingToast = toast.loading('Translating...');
     try {
-      const result = await model.generateContentStream(prompt);
-      let text = '';
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text();
-        text += chunkText;
-        setGeminiResponse(text);
-      }
+      const response = await fetch('http://localhost:3003/api/ai/translate-text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sentence: message.content, language: currentLanguage }),
+      });
+      const result = await response.json();
+      setAnswer(result.text);
 
       toast.update(loadingToast, {
-        render: 'Gemini responsded!',
+        render: 'Translation completed !',
         type: 'success',
         isLoading: false,
         autoClose: 3000,
       });
     } catch (error) {
       toast.update(loadingToast, {
-        render: 'Error getting response.',
+        render: 'Error getting translation.',
         type: 'error',
         isLoading: false,
         autoClose: 3000,
       });
     }
-  }
+  };
 
-  // Modal logic
-  const handleShowBtn = () => {
-    setIsModalOpen(true);
-    geminiRun();
+  const fetchTranslateAudio = async () => {
+    const loadingToast = toast.loading('Translating audio...');
+    try {
+      const response = await fetch('http://localhost:3003/api/ai/translate-audio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ audioURL: message.audio, language: currentLanguage }),
+      });
+      const result = await response.json();
+      setAnswer(result.translatedText);
+
+      toast.update(loadingToast, {
+        render: 'Audio translated !',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.update(loadingToast, {
+        render: 'Error translating audio.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
   };
 
   const handleCancelModal = () => {
     setIsModalOpen(false);
-    setGeminiResponse('');
+    setAnswer('');
   };
 
-  // TODO: Impliment gemini with image content type
+  const handleShowBtn = () => {
+    setIsModalOpen(true);
+    if (message.audio) {
+      fetchTranslateAudio();
+    } else {
+      fetchTranslateText();
+    }
+  };
+
   return (
     <div ref={ref} className={`msg-block ${message.senderId === currentUser.id && 'user-msg'}`}>
       <div className="content">
         <div className="info">
           <p className="text">{message.content}</p>
           {message.img && <Image width={200} className="img" src={message.img} alt="" />}
-          {!message.img && (
+          {!message.img && !message.audio && (
             <Button
               shape="circle"
               size="small"
@@ -96,18 +124,30 @@ function Message({ message, currentLanguage }) {
             </Button>
           )}
           {message.audio && (
-            <audio controls>
-              <source src={message.audio} type="audio/wav" />
-              Your browser does not support the audio element.
-            </audio>
+            <>
+              <audio controls>
+                <source src={message.audio} type="audio/wav" />
+                Your browser does not support the audio element.
+              </audio>
+              <Button
+                shape="circle"
+                size="small"
+                type="primary"
+                danger
+                className="modal-btn"
+                onClick={handleShowBtn}
+              >
+                <QuestionOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />
+              </Button>
+            </>
           )}
           <Modal
             title="Gemini Response"
             open={isModalOpen}
-            onOk={() => setIsModalOpen(false)}
+            onOk={handleCancelModal}
             onCancel={handleCancelModal}
           >
-            <Paragraph copyable><Markdown>{geminiResponse}</Markdown></Paragraph>
+            <Paragraph copyable><Markdown>{answer}</Markdown></Paragraph>
           </Modal>
         </div>
         <div className="timestamp">{message.timestamp.time}</div>

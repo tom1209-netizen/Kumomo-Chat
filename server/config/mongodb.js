@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://lephuckhang0:7127@server.0cqt3vv.mongodb.net/kumomo?retryWrites=true&w=majority",
-    );
+    await mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
     console.log("MongoDB connected...");
   } catch (err) {
     console.error(err.message);

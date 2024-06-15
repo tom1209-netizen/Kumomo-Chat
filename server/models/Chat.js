@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema({
     time: { type: String, default: '' },
   },
   img: { type: String, default: '' },
+  audio: { type: String, default: '' },
 });
 
 const chatSchema = new mongoose.Schema({
