@@ -69,14 +69,18 @@ function ChatWindow() {
     }
   }, [data.chatId]);
 
-  const handleMessageSend = async () => {
+  const handleMessageSend = async (audioBlob = null) => {
     const formData = new FormData();
     formData.append('chatId', data.chatId);
     formData.append('senderId', auth.user.id);
     formData.append('content', content);
 
     if (img && img.length > 0) {
-      formData.append('img', img[0].originFileObj);
+      formData.append('file', img[0].originFileObj);
+    }
+
+    if (audioBlob) {
+      formData.append('file', audioBlob, 'recording.wav');
     }
 
     try {
@@ -225,10 +229,13 @@ function ChatWindow() {
         onCancel={handleAudioCancel}
         footer={null}
         centered
-        style={{ width: `${80 * width / 100}px`, minWidth: `${80 * width / 100}px` }}
-        bodyStyle={{ display: 'flex', justifyContent: 'center' }} // Center the content horizontally
+        style={{ width: `${70 * width / 100}px`, minWidth: `${60 * width / 100}px` }}
       >
-        <AudioRecorder />
+        <AudioRecorder onSave={(audioBlob) => {
+          handleMessageSend(audioBlob);
+          setIsAudioModalVisible(false);
+        }}
+        />
       </Modal>
     </div>
   );

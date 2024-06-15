@@ -8,8 +8,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.get('/:chatId', getChatMessages);
-router.post('/', createChat); // Route to create a new chat
-router.post('/send', upload.single('img'), sendMessage);
+router.post('/', createChat); 
+router.post('/send', upload.single('file'), sendMessage);
 router.get('/user/:userId', getUserChats);
 
 export default router;

@@ -95,6 +95,12 @@ function Message({ message, currentLanguage }) {
               <QuestionOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />
             </Button>
           )}
+          {message.audio && (
+            <audio controls>
+              <source src={message.audio} type="audio/wav" />
+              Your browser does not support the audio element.
+            </audio>
+          )}
           <Modal
             title="Gemini Response"
             open={isModalOpen}
@@ -115,6 +121,7 @@ Message.propTypes = {
     id: PropTypes.string,
     content: PropTypes.string,
     img: PropTypes.string,
+    audio: PropTypes.string,
     senderId: PropTypes.string,
     userLanguage: PropTypes.string,
     timestamp: PropTypes.shape({

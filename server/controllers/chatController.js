@@ -30,7 +30,7 @@ export const sendMessage = async (req, res) => {
   const { chatId, senderId, content } = req.body;
   const timestamp = getCurrentTime();
 
-  let photoURL = null;
+  let fileUrl = '';
   let cloudinaryPublicId = null;
 
   if (req.file) {
@@ -40,17 +40,17 @@ export const sendMessage = async (req, res) => {
     try {
       const result = await cloudinary.uploader.upload(dataUrl, {
         public_id: fileName,
-        folder: 'user_sent_image',
+        folder: req.file.mimetype.startsWith('audio/') ? 'user_sent_audio' : 'user_sent_image',
         resource_type: 'auto',
       });
 
       if (result) {
-        photoURL = result.secure_url; 
+        fileUrl = result.secure_url;
         cloudinaryPublicId = result.public_id;
       }
     } catch (err) {
       console.error('Cloudinary upload error:', err);
-      return res.status(500).json({ message: 'Error uploading image' });
+      return res.status(500).json({ message: 'Error uploading file' });
     }
   }
 
@@ -58,7 +58,8 @@ export const sendMessage = async (req, res) => {
     content,
     senderId,
     timestamp,
-    img: photoURL,
+    img: req.file && req.file.mimetype.startsWith('image/') ? fileUrl : '',
+    audio: req.file && req.file.mimetype.startsWith('audio/') ? fileUrl : '',
   };
 
   try {

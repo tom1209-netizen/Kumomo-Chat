@@ -2,38 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 
-function AudioRecorder() {
+function AudioRecorder({ onSave }) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioChunks, setAudioChunks] = useState([]);
-  const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const canvasRef = useRef(null);
-
-  const startRecording = async () => {
-    setIsRecording(true);
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      setAudioChunks((prev) => [...prev, event.data]);
-    };
-    mediaRecorderRef.current.start();
-    visualize(stream);
-  };
-
-  const stopRecording = () => {
-    setIsRecording(false);
-    mediaRecorderRef.current.stop();
-  };
-
-  const saveRecording = () => {
-    const blob = new Blob(audioChunks, { type: 'audio/wav' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'recording.wav';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const visualize = (stream) => {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -80,9 +53,37 @@ function AudioRecorder() {
     draw();
   };
 
+  const startRecording = async () => {
+    setIsRecording(true);
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    mediaRecorderRef.current.ondataavailable = (event) => {
+      setAudioChunks((prev) => [...prev, event.data]);
+    };
+    mediaRecorderRef.current.start();
+    visualize(stream);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    mediaRecorderRef.current.stop();
+  };
+
+  const saveRecording = () => {
+    const blob = new Blob(audioChunks, { type: 'audio/wav' });
+    onSave(blob);
+    setAudioChunks([]);
+  };
+
   return (
-    <div style={{ display: 'flex', gap: '15px', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ display: 'flex', gap: '15px', flexDirection: 'row', alignItems: 'center' }}>
+    <div style={{
+      display: 'flex', gap: '15px', flexDirection: 'column', alignItems: 'center',
+    }}
+    >
+      <div style={{
+        display: 'flex', gap: '15px', flexDirection: 'row', alignItems: 'center',
+      }}
+      >
         <Button type="primary" onClick={isRecording ? stopRecording : startRecording}>
           {isRecording ? 'Stop Recording' : 'Start Recording'}
         </Button>
@@ -90,7 +91,7 @@ function AudioRecorder() {
           Save Recording
         </Button>
       </div>
-      <canvas ref={canvasRef} width="500" height="200" style={{ border: '1px solid black', marginTop: '20px' }} />
+      <canvas ref={canvasRef} width="500" height="200" style={{ border: '1px solid black', marginTop: '20px', borderRadius: '10px' }} />
     </div>
   );
 }
