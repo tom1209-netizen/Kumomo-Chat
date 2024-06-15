@@ -18,7 +18,12 @@ export function LanguageProvider({ children }) {
       }
 
       try {
-        const response = await fetch(`http://localhost:3003/api/users/language/${auth.user.id}`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3003/api/users/language/${auth.user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setLanguage(data.language);

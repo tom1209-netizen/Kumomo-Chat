@@ -41,10 +41,15 @@ function ChatList() {
   };
 
   const handleSearch = async (value) => {
+    const token = localStorage.getItem('token');
     setUserName(value);
     if (value.trim() !== '') {
       try {
-        const response = await fetch(`http://localhost:3003/api/users/search?username=${value}`);
+        const response = await fetch(`http://localhost:3003/api/users/search?username=${value}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        });
         if (response.ok) {
           const users = await response.json();
           const userSuggestions = users.map((user) => ({

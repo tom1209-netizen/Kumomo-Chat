@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { registerUser, loginUser, searchUsers, getUserLanguage } from '../controllers/userController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -10,7 +11,8 @@ const upload = multer({ storage });
 
 router.post('/register', upload.single('file'), registerUser);
 router.post('/login', loginUser);
-router.get('/search', searchUsers);
-router.get('/language/:userId', getUserLanguage)
+
+router.get('/language/:userId', authMiddleware, getUserLanguage);
+router.get('/search', authMiddleware, searchUsers);
 
 export default router;
