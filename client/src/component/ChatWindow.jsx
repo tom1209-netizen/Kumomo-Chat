@@ -56,9 +56,6 @@ function ChatWindow() {
 
   const handleMessageSend = async () => {
     const formData = new FormData();
-    console.log(data.chatId);
-    console.log(auth.user.id);
-    console.log(content);
     formData.append('chatId', data.chatId);
     formData.append('senderId', auth.user.id);
     formData.append('content', content);

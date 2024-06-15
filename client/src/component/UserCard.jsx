@@ -30,13 +30,14 @@ function UserCard({
 
 UserCard.propTypes = {
   userName: PropTypes.string.isRequired,
-  profileUrl: PropTypes.string.isRequired,
+  profileUrl: PropTypes.string,
   time: PropTypes.string,
   latestMsg: PropTypes.string,
   onClick: PropTypes.func.isRequired,
 };
 
 UserCard.defaultProps = {
+  profileUrl: '',
   time: '',
   latestMsg: '',
 };

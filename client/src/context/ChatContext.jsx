@@ -15,9 +15,12 @@ export const ChatContextProvider = ({ children }) => {
   const chatReducer = (state, action) => {
     switch (action.type) {
       case 'CHANGE_USER':
+        const user = action.payload;
+        const chatId = generateChatId(auth.user.id, user.user._id);
+        console.log('Updated state:', { user, chatId });  // Log the new state
         return {
-          user: action.payload,
-          chatId: generateChatId(auth.user.id, action.payload.user._id),
+          user,
+          chatId,
         };
 
       default:
@@ -31,5 +34,5 @@ export const ChatContextProvider = ({ children }) => {
 };
 
 ChatContextProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };

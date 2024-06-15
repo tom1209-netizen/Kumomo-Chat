@@ -6,7 +6,7 @@ const userChatSchema = new mongoose.Schema({
     type: Map,
     of: {
       userInfo: {
-        uid: { type: mongoose.Schema.Types.ObjectId, required: true },
+        _id: { type: mongoose.Schema.Types.ObjectId, required: true },
         userName: { type: String, required: true },
         photoURL: { type: String, default: '' },
       },

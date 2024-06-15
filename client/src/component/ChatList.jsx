@@ -36,6 +36,7 @@ function ChatList() {
   }, [auth.user.id]);
 
   const handleChatSelect = (user) => {
+    console.log(user);
     dispatch({ type: 'CHANGE_USER', payload: { user } });
   };
 
@@ -71,6 +72,7 @@ function ChatList() {
   const handleSearchSelect = async (value, option) => {
     setUserName(option.userDetails.userName);
     const selectedUser = option.userDetails;
+    console.log(selectedUser._id);
     const combinedId = generateChatId(auth.user.id, selectedUser._id);
 
     try {
@@ -93,7 +95,7 @@ function ChatList() {
           body: JSON.stringify({
             chatId: combinedId,
             userInfo: {
-              uid: selectedUser._id,
+              _id: selectedUser._id,
               userName: selectedUser.userName,
               photoURL: selectedUser.photoURL,
             },
@@ -108,7 +110,7 @@ function ChatList() {
           body: JSON.stringify({
             chatId: combinedId,
             userInfo: {
-              uid: auth.user.id,
+              _id: auth.user.id,
               userName: auth.user.userName,
               photoURL: auth.user.photoURL,
             },
@@ -143,7 +145,6 @@ function ChatList() {
       <div className="chat-container">
         <h1>All chats</h1>
         <div className="all-chats-container">
-          {console.log(chats)}
           {Object.entries(chats)
             ?.sort((a, b) => new Date(b[1].timestamp?.date) - new Date(a[1].timestamp?.date))
             .map((chat) => (

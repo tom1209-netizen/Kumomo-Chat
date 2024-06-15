@@ -84,7 +84,7 @@ const updateUserChats = async (chatId, senderId, message) => {
     },
     [`chats.${chatId}.timestamp`]: timestamp,
     [`chats.${chatId}.userInfo`]: {
-      uid: receiver._id,
+      _id: receiver._id,
       userName: receiver.userName,
       photoURL: receiver.photoURL,
     },
@@ -97,7 +97,7 @@ const updateUserChats = async (chatId, senderId, message) => {
     },
     [`chats.${chatId}.timestamp`]: timestamp,
     [`chats.${chatId}.userInfo`]: {
-      uid: sender._id,
+      _id: sender._id,
       userName: sender.userName,
       photoURL: sender.photoURL,
     },
