@@ -8,6 +8,8 @@ import { ChatContext } from '../context/ChatContext';
 import { generateChatId } from '../utils/chatIDGenerator';
 
 function ChatList() {
+  const token = localStorage.getItem('token');
+
   const [userName, setUserName] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [chats, setChats] = useState([]);
@@ -18,7 +20,11 @@ function ChatList() {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const response = await fetch(`http://localhost:3003/api/chats/user/${auth.user.id}`);
+        const response = await fetch(`http://localhost:3003/api/chats/user/${auth.user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        });
         if (response.ok) {
           const userChats = await response.json();
           setChats(userChats);
@@ -41,7 +47,6 @@ function ChatList() {
   };
 
   const handleSearch = async (value) => {
-    const token = localStorage.getItem('token');
     setUserName(value);
     if (value.trim() !== '') {
       try {
@@ -81,13 +86,18 @@ function ChatList() {
     const combinedId = generateChatId(auth.user.id, selectedUser._id);
 
     try {
-      const response = await fetch(`http://localhost:3003/api/chats/${combinedId}`);
+      const response = await fetch(`http://localhost:3003/api/chats/${combinedId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
       if (!response.ok) {
         // Create a new chat if it doesn't exist
         await fetch('http://localhost:3003/api/chats', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({ chatId: combinedId, userIds: [auth.user.id, selectedUser._id] }),
         });
@@ -96,6 +106,7 @@ function ChatList() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             chatId: combinedId,
@@ -111,6 +122,7 @@ function ChatList() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             chatId: combinedId,

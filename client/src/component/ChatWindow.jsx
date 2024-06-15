@@ -25,6 +25,9 @@ import AudioRecorder from './AudioRecorder';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 
 function ChatWindow() {
+  // jwt token
+  const token = localStorage.getItem('token');
+
   // All messages
   const [messages, setMessages] = useState([]);
 
@@ -52,7 +55,11 @@ function ChatWindow() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:3003/api/chats/${data.chatId}`);
+        const response = await fetch(`http://localhost:3003/api/chats/${data.chatId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        });
         if (response.ok) {
           const responseMessage = await response.json();
           setMessages(responseMessage);
@@ -85,6 +92,9 @@ function ChatWindow() {
 
     try {
       const response = await fetch('http://localhost:3003/api/chats/send', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         method: 'POST',
         body: formData,
       });

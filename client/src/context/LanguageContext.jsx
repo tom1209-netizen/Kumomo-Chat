@@ -7,6 +7,7 @@ const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
 
 export function LanguageProvider({ children }) {
+  const token = localStorage.getItem('token');
   const [language, setLanguage] = useState('vietnamese');
   const { auth } = useAuth();
 
@@ -18,7 +19,6 @@ export function LanguageProvider({ children }) {
       }
 
       try {
-        const token = localStorage.getItem('token');
         const response = await fetch(`http://localhost:3003/api/users/language/${auth.user.id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
