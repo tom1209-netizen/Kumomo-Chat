@@ -6,7 +6,7 @@ const LanguageContext = createContext();
 
 export const useLanguage = () => useContext(LanguageContext);
 
-export const LanguageProvider = ({ children }) => {
+export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(null);
   const { auth } = useAuth();
 
@@ -34,7 +34,7 @@ export const LanguageProvider = ({ children }) => {
   }, [auth]);
 
   return <LanguageContext.Provider value={language}>{children}</LanguageContext.Provider>;
-};
+}
 
 LanguageProvider.propTypes = {
   children: PropTypes.node.isRequired,

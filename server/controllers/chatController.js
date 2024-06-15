@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
 import Chat from '../models/Chat.js';
 import User from '../models/User.js'
 import UserChat from '../models/UserChat.js';
 import { getCurrentTime } from '../utils/time.js';
 import { generateChatId } from '../utils/chatIDGenerator.js';
+import cloudinary from '../config/cloudinaryConfig.js';
 
 // Create a new chat
 export const createChat = async (req, res) => {
@@ -27,16 +27,38 @@ export const createChat = async (req, res) => {
 
 // Send a message
 export const sendMessage = async (req, res) => {
-  console.log('Received request:', req.body);
   const { chatId, senderId, content } = req.body;
-  const img = req.file ? req.file.path : null; 
   const timestamp = getCurrentTime();
+
+  let photoURL = null;
+  let cloudinaryPublicId = null;
+
+  if (req.file) {
+    const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    const fileName = `${senderId}-${chatId}-${Date.now()}`;
+
+    try {
+      const result = await cloudinary.uploader.upload(dataUrl, {
+        public_id: fileName,
+        folder: 'user_sent_image',
+        resource_type: 'auto',
+      });
+
+      if (result) {
+        photoURL = result.secure_url; 
+        cloudinaryPublicId = result.public_id;
+      }
+    } catch (err) {
+      console.error('Cloudinary upload error:', err);
+      return res.status(500).json({ message: 'Error uploading image' });
+    }
+  }
 
   const message = {
     content,
     senderId,
     timestamp,
-    img,
+    img: photoURL,
   };
 
   try {
@@ -49,7 +71,10 @@ export const sendMessage = async (req, res) => {
     await updateUserChats(chatId, senderId, message);
     res.status(200).json(message);
   } catch (error) {
-    console.error('Error sending message:', error);
+    if (cloudinaryPublicId) {
+      await cloudinary.uploader.destroy(cloudinaryPublicId);
+    }
+
     res.status(500).json({ message: 'Server error', error });
   }
 };

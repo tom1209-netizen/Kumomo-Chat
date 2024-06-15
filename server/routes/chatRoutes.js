@@ -3,7 +3,9 @@ import { getChatMessages, sendMessage, getUserChats, createChat } from '../contr
 import multer from 'multer';
 
 const router = express.Router();
-const upload = multer();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 router.get('/:chatId', getChatMessages);
 router.post('/', createChat); // Route to create a new chat
