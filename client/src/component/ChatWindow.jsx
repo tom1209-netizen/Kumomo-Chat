@@ -16,28 +16,15 @@ import {
   useState,
   useEffect,
 } from 'react';
-import {
-  getDownloadURL,
-  ref,
-  uploadBytesResumable,
-} from 'firebase/storage';
-import {
-  arrayUnion,
-  doc,
-  onSnapshot,
-  updateDoc,
-} from 'firebase/firestore';
-import { v4 as uuid } from 'uuid';
 import { toast } from 'react-toastify';
 import { ChatContext } from '../context/ChatContext';
-import { AuthContext } from '../context/AuthContext';
-import { db, storage } from '../config/firebase-config';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Message from './Message';
 
 function ChatWindow() {
   const [messages, setMessages] = useState([]);
-  const { currentUser } = useContext(AuthContext);
+  const { auth } = useAuth();
   const { data } = useContext(ChatContext);
 
   const [content, setContent] = useState('');
@@ -47,123 +34,59 @@ function ChatWindow() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const currentLanguage = useLanguage();
 
-  const getCurrentTime = ({ timezone = 'Asia/Ho_Chi_Minh' } = {}) => {
-    const event = new Date(Date.now());
-    const timestampRaw = event.toLocaleString('en-GB', { timezone });
-    const [date, fullTime] = timestampRaw.split(',').map((value) => value.trim());
-
-    const [hours, minutes] = fullTime.split(':');
-    const time = `${hours}:${minutes}`;
-
-    const timestamp = {
-      date,
-      time,
-    };
-    return timestamp;
-  };
-
-  // Logic for getting the chat from the database
   useEffect(() => {
-    const unSub = onSnapshot(doc(db, 'chats', data.chatId), (documentSnapshot) => {
-      if (documentSnapshot.exists()) {
-        setMessages(documentSnapshot.data().messages);
-      } else {
-        console.log('No such document!');
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`http://localhost:3003/api/chats/${data.chatId}`);
+        if (response.ok) {
+          const responseMessage = await response.json();
+          setMessages(responseMessage);
+        } else {
+          throw new Error('Failed to fetch messages');
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
       }
-    });
-    return () => {
-      unSub();
     };
+
+    if (data.chatId) {
+      fetchMessages();
+    }
   }, [data.chatId]);
 
-  // Logic for sending message
   const handleMessageSend = async () => {
-    if (img) {
-      const storageRef = ref(storage, `users_sent_image/${currentUser.uid}/${uuid()}`);
+    const formData = new FormData();
+    console.log(data.chatId);
+    console.log(auth.user.id);
+    console.log(content);
+    formData.append('chatId', data.chatId);
+    formData.append('senderId', auth.user.id);
+    formData.append('content', content);
 
-      const uploadFile = img && img.length > 0 ? img[0].originFileObj : null;
-      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
-        },
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            await updateDoc(doc(db, 'chats', data.chatId), {
-              messages: arrayUnion({
-                id: uuid(),
-                content,
-                senderId: currentUser.uid,
-                timestamp: getCurrentTime(),
-                img: downloadURL,
-              }),
-            });
-
-            setImg(null);
-          });
-        },
-      );
-    } else {
-      if (content === '') {
-        toast.error('Message cannot be empty!');
-        return;
-      }
-
-      await updateDoc(doc(db, 'chats', data.chatId), {
-        messages: arrayUnion({
-          id: uuid(),
-          content,
-          senderId: currentUser.uid,
-          timestamp: getCurrentTime(),
-        }),
-      });
+    if (img && img.length > 0) {
+      formData.append('img', img[0].originFileObj);
     }
 
-    // TODO: Use server time in the future because getCurrentTime() is client time
-    // so it will lead to inconsistencies in database if user is from different timezones
-    // since this project is still quite simple and I don't have much time
-    // I will leave it like this for now
-    await updateDoc(doc(db, 'userChats', currentUser.uid), {
-      [`${data.chatId}.lastMessage`]: {
-        content: content || 'Image',
-      },
-      [`${data.chatId}.timestamp`]: getCurrentTime(),
-    });
+    try {
+      const response = await fetch('http://localhost:3003/api/chats/send', {
+        method: 'POST',
+        body: formData,
+      });
 
-    await updateDoc(doc(db, 'userChats', data.user.user.uid), {
-      [`${data.chatId}.lastMessage`]: {
-        content: content || 'Image',
-      },
-      [`${data.chatId}.timestamp`]: getCurrentTime(),
-    });
+      if (response.ok) {
+        const newMessage = await response.json();
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
 
     setContent('');
     setImg(null);
   };
 
-  // Logic for uploading image
-  const beforeImageUpload = (file) => {
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      toast.error(`${file.name} is not a valid image type, please choose a jpg or png file`);
-      return null;
-    }
-    return false;
-  };
-
-  const onImageChange = ({ fileList: newFileList }) => {
-    const latestFileList = newFileList.slice(-1);
-    setImg(latestFileList);
-
-    handlePreview(latestFileList[0].originFileObj);
-  };
-
-  // Handle modal logic
   const handlePreview = async (file) => {
     const fileReader = new FileReader();
     fileReader.onloadend = () => {
@@ -182,6 +105,21 @@ function ChatWindow() {
     handleMessageSend();
   };
 
+  const beforeImageUpload = (file) => {
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      toast.error(`${file.name} is not a valid image type, please choose a jpg or png file`);
+      return null;
+    }
+    return false;
+  };
+
+  const onImageChange = ({ fileList: newFileList }) => {
+    const latestFileList = newFileList.slice(-1);
+    setImg(latestFileList);
+
+    handlePreview(latestFileList[0].originFileObj);
+  };
+
   return (
     <div className="chat-window">
       <div className="chat-header">
@@ -191,7 +129,7 @@ function ChatWindow() {
               <Avatar size={50} icon={<UserOutlined />} src={data.user.user?.photoURL} />
             </div>
             <div className="info">
-              <h1 className="name">{data.user.user?.displayName}</h1>
+              <h1 className="name">{data.user.user?.userName}</h1>
             </div>
           </>
         ) : (
@@ -208,9 +146,11 @@ function ChatWindow() {
       </div>
 
       <div className="msgs-container">
-        {messages.map((message) => (
-          <Message message={message} key={message.id} currentLanguage={currentLanguage} />
-        ))}
+        {messages.length > 0 && (
+          messages.map((message) => (
+            <Message message={message} key={message._id} currentLanguage={currentLanguage} />
+          ))
+        )}
       </div>
 
       <div className="chat-bottom">

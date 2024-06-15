@@ -14,14 +14,15 @@ import {
   Image,
 } from 'antd';
 import Markdown from 'react-markdown';
-import { AuthContext } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import model from '../config/gemini-config';
 import '../scss/Message.scss';
 
 const { Paragraph } = Typography;
 
 function Message({ message, currentLanguage }) {
-  const { currentUser } = useContext(AuthContext);
+  const { auth } = useAuth();
+  const currentUser = auth.user;
   const [geminiResponse, setGeminiResponse] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const ref = useRef();
@@ -77,7 +78,7 @@ function Message({ message, currentLanguage }) {
 
   // TODO: Impliment gemini with image content type
   return (
-    <div ref={ref} className={`msg-block ${message.senderId === currentUser.uid && 'user-msg'}`}>
+    <div ref={ref} className={`msg-block ${message.senderId === currentUser.id && 'user-msg'}`}>
       <div className="content">
         <div className="info">
           <p className="text">{message.content}</p>

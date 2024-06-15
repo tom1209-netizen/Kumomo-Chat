@@ -11,6 +11,7 @@ import { AuthContextProvider, RequireAuth } from './context/AuthContext';
 import { ChatContextProvider } from './context/ChatContext';
 import { LanguageProvider } from './context/LanguageContext';
 
+// Create the router configuration
 const router = createBrowserRouter([
   {
     index: true,
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Render the application
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthContextProvider>
     <ChatContextProvider>

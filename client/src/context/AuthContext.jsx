@@ -1,28 +1,37 @@
 import {
   createContext, useEffect, useState, useContext,
 } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../config/firebase-config';
 
 export const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState({});
+  const [auth, setAuth] = useState({ isAuthenticated: false, user: null });
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-
-    return () => {
-      unsub();
-    };
+    const token = localStorage.getItem('token');
+    if (token) {
+      const user = JSON.parse(localStorage.getItem('user'));
+      setAuth({ isAuthenticated: true, user });
+    }
   }, []);
 
+  const login = (token, user) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    setAuth({ isAuthenticated: true, user });
+  };
+
+  const logout = (navigate) => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuth({ isAuthenticated: false, user: null });
+    navigate('/login');
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser }}>
+    <AuthContext.Provider value={{ auth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -32,17 +41,19 @@ AuthContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
+export const useAuth = () => useContext(AuthContext);
+
 export function RequireAuth({ children }) {
+  const { auth } = useAuth();
   const navigate = useNavigate();
-  const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!auth.isAuthenticated) {
       navigate('/login');
     }
-  }, [currentUser, navigate]);
+  }, [auth, navigate]);
 
-  return currentUser ? children : null;
+  return auth.isAuthenticated ? children : null;
 }
 
 RequireAuth.propTypes = {

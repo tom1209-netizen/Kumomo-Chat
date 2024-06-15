@@ -1,17 +1,15 @@
-import {
-  createContext,
-  useContext,
-  useReducer,
-} from 'react';
+import { createContext, useContext, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { AuthContext } from './AuthContext';
+import { generateChatId } from '../utils/chatIDGenerator';
 
 export const ChatContext = createContext();
+
 export const ChatContextProvider = ({ children }) => {
-  const { currentUser } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const INITIAL_STATE = {
     chatId: 'null',
-    user: {},
+    user: {}
   };
 
   const chatReducer = (state, action) => {
@@ -19,10 +17,7 @@ export const ChatContextProvider = ({ children }) => {
       case 'CHANGE_USER':
         return {
           user: action.payload,
-          chatId:
-            currentUser.uid > action.payload.user.uid
-              ? currentUser.uid + action.payload.user.uid
-              : action.payload.user.uid + currentUser.uid,
+          chatId: generateChatId(auth.user.id, action.payload.user._id),
         };
 
       default:
@@ -32,13 +27,9 @@ export const ChatContextProvider = ({ children }) => {
 
   const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
 
-  return (
-    <ChatContext.Provider value={{ data: state, dispatch }}>
-      {children}
-    </ChatContext.Provider>
-  );
+  return <ChatContext.Provider value={{ data: state, dispatch }}>{children}</ChatContext.Provider>;
 };
 
 ChatContextProvider.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired
 };

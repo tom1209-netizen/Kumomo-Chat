@@ -1,5 +1,4 @@
 import '../scss/Navbar.scss';
-import { useContext } from 'react';
 import { Switch, Avatar, Tooltip } from 'antd';
 import {
   MoonFilled,
@@ -10,18 +9,16 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../config/firebase-config';
-import { AuthContext } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import logo from '../assets/img/kumomo_logo.png';
 
 function Navbar() {
   const navigate = useNavigate();
-  const { currentUser } = useContext(AuthContext);
+  const { auth, logout } = useAuth();
+  const currentUser = auth.user;
 
   const handleSignOut = () => {
-    signOut(auth);
-    navigate('/login');
+    logout(navigate);
   };
 
   return (
@@ -57,7 +54,7 @@ function Navbar() {
           defaultChecked
         />
         <div className="user-profile-container">
-          <Tooltip title={currentUser.displayName} color="#5B96F7">
+          <Tooltip title={currentUser.userName} color="#5B96F7">
             <Avatar size={50} icon={<UserOutlined />} src={currentUser.photoURL} />
           </Tooltip>
         </div>

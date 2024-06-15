@@ -12,17 +12,9 @@ import {
   PlusOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import {
-  auth,
-  storage,
-  db,
-} from '../config/firebase-config';
 import 'react-toastify/dist/ReactToastify.css';
 import '../scss/Register.scss';
 import logo from '../assets/img/kumomo_logo.png';
@@ -55,55 +47,37 @@ export default function Register() {
 
   const handleOnSubmit = async ({ userName, email, password }) => {
     const loadingToast = toast.loading('Signing up...');
+    const formData = new FormData();
+    formData.append('userName', userName);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('language', language);
+    if (file && file.length > 0) {
+      formData.append('file', file[0].originFileObj);
+    }
 
     try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
+      const response = await fetch('http://localhost:3003/api/users/register', {
+        method: 'POST',
+        body: formData,
+      });
 
-      const date = new Date().getTime();
-      const storageRef = ref(storage, `user_profile_picture/${userName}-${date}`);
-
-      const uploadFile = file && file.length > 0 ? file[0].originFileObj : null;
-      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
-        },
-        (error) => {
-          toast.error(`Image upload failed, error: ${error}`);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            await updateProfile(res.user, {
-              displayName: userName,
-              photoURL: downloadURL,
-            });
-
-            await setDoc(doc(db, 'users', res.user.uid), {
-              uid: res.user.uid,
-              displayName: userName,
-              email,
-              photoURL: downloadURL,
-              language,
-            });
-
-            await setDoc(doc(db, 'userChats', res.user.uid), {});
-            toast.update(loadingToast, {
-              render: 'Sign up successful!',
-              type: 'success',
-              isLoading: false,
-              autoClose: 3000,
-            });
-            form.resetFields();
-            navigate('/');
-          });
-        },
-      );
+      if (response.ok) {
+        toast.update(loadingToast, {
+          render: 'Sign up successful!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000,
+        });
+        form.resetFields();
+        navigate('/');
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Sign up failed!');
+      }
     } catch (error) {
       toast.update(loadingToast, {
-        render: 'Sign up failed!',
+        render: error.message,
         type: 'error',
         isLoading: false,
         autoClose: 3000,
@@ -163,9 +137,10 @@ export default function Register() {
           rules={[
             { required: true, message: 'Please input your Username!' },
             { min: 3, message: 'username must be at least 3 characters' },
-            { max: 8, message: 'username must be at most 8 characters' }
+            { max: 8, message: 'username must be at most 8 characters' },
           ]}
-          hasFeedback>
+          hasFeedback
+        >
           <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
         </Form.Item>
 
