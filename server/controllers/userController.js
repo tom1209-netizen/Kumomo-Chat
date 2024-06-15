@@ -77,7 +77,7 @@ export const loginUser = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id, userName: user.userName, email: user.email }, 'watermelon', { expiresIn: '1h' });
 
-    res.status(200).json({ token, user: { id: user._id, userName: user.userName, email: user.email } });
+    res.status(200).json({ token, user: { id: user._id, userName: user.userName, email: user.email, photoURL: user.photoURL } });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
