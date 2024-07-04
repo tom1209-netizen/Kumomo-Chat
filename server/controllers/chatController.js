@@ -87,7 +87,7 @@ export const getChatMessages = async (req, res) => {
     if (chat) {
       res.status(200).json(chat.messages);
     } else {
-      res.status(404).json({ message: 'Chat not found' });
+      res.status(200).json([]);
     }
   } catch (error) {
     console.error('Error fetching chat messages:', error);
@@ -151,7 +151,7 @@ export const getUserChats = async (req, res) => {
     if (userChats) {
       res.status(200).json(userChats.chats);
     } else {
-      res.status(404).json({ message: 'No chats found for this user' });
+      res.status(200).json([]);
     }
   } catch (error) {
     console.error('Error fetching user chats:', error);
