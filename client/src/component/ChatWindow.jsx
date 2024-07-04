@@ -17,6 +17,7 @@ import {
   useEffect,
 } from 'react';
 import { toast } from 'react-toastify';
+import { v4 as uuid } from 'uuid';
 import { ChatContext } from '../context/ChatContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -44,7 +45,7 @@ function ChatWindow() {
   const [previewVisible, setPreviewVisible] = useState(false);
 
   // Audio state
-  const [isAudioModalVisible, setIsAudioModalVisible] = useState(false);
+  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
 
   // Current language
   const currentLanguage = useLanguage();
@@ -57,7 +58,7 @@ function ChatWindow() {
       try {
         const response = await fetch(`http://localhost:3003/api/chats/${data.chatId}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -93,7 +94,7 @@ function ChatWindow() {
     try {
       const response = await fetch('http://localhost:3003/api/chats/send', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         method: 'POST',
         body: formData,
@@ -134,8 +135,8 @@ function ChatWindow() {
 
   // Image checking
   const beforeImageUpload = (file) => {
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      toast.error(`${file.name} is not a valid image type, please choose a jpg or png file`);
+    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+      toast.error(`${file.name} is not a valid image type, please choose a jpg, png or jpeg file`);
       return null;
     }
     return false;
@@ -150,15 +151,15 @@ function ChatWindow() {
 
   // Handle audio modal
   const showAudioModal = () => {
-    setIsAudioModalVisible(true);
+    setIsAudioModalOpen(true);
   };
 
   const handleAudioOk = () => {
-    setIsAudioModalVisible(false);
+    setIsAudioModalOpen(false);
   };
 
   const handleAudioCancel = () => {
-    setIsAudioModalVisible(false);
+    setIsAudioModalOpen(false);
   };
 
   return (
@@ -189,7 +190,7 @@ function ChatWindow() {
       <div className="msgs-container">
         {messages.length > 0 && (
           messages.map((message) => (
-            <Message message={message} key={message._id} currentLanguage={currentLanguage} />
+            <Message message={message} key={uuid()} currentLanguage={currentLanguage} />
           ))
         )}
       </div>
@@ -234,16 +235,16 @@ function ChatWindow() {
       </div>
       <Modal
         title="Voice Recorder"
-        visible={isAudioModalVisible}
+        open={isAudioModalOpen}
         onOk={handleAudioOk}
         onCancel={handleAudioCancel}
         footer={null}
         centered
-        style={{ width: `${70 * width / 100}px`, minWidth: `${60 * width / 100}px` }}
+        style={{ width: `${0.70 * width}px`, minWidth: `${0.60 * width}px` }}
       >
         <AudioRecorder onSave={(audioBlob) => {
           handleMessageSend(audioBlob);
-          setIsAudioModalVisible(false);
+          setIsAudioModalOpen(false);
         }}
         />
       </Modal>

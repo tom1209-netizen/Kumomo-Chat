@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { AuthContext } from './AuthContext';
-import { generateChatId } from '../utils/chatIDGenerator';
+import generateChatId from '../utils/chatIDGenerator';
 
 export const ChatContext = createContext();
 
@@ -13,11 +13,12 @@ export function ChatContextProvider({ children }) {
   };
 
   const chatReducer = (state, action) => {
+    let user;
+    let chatId;
     switch (action.type) {
       case 'CHANGE_USER':
-        const user = action.payload;
-        const chatId = generateChatId(auth.user.id, user.user._id);
-        console.log('Updated state:', { user, chatId }); // Log the new state
+        user = action.payload; // Assign values to the variables inside the case block
+        chatId = generateChatId(auth.user.id, user.user._id);
         return {
           user,
           chatId,

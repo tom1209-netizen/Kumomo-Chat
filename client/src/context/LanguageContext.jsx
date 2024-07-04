@@ -1,4 +1,9 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from './AuthContext';
 
@@ -14,24 +19,25 @@ export function LanguageProvider({ children }) {
   useEffect(() => {
     const fetchLanguage = async () => {
       if (!auth.user || !auth.user.id) {
-        console.error('No current user found');
+        // Only fetch when user is logged in
         return;
       }
 
       try {
         const response = await fetch(`http://localhost:3003/api/users/language/${auth.user.id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
           const data = await response.json();
           setLanguage(data.language);
         } else {
-          console.error('No language to select!');
+          throw new Error('No language to select!');
         }
       } catch (error) {
-        console.error('Error fetching language:', error);
+        // console.error('Error fetching language:', error);
+        setLanguage('vietnamese');
       }
     };
 

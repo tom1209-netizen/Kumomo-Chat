@@ -5,7 +5,7 @@ import UserCard from './UserCard';
 import '../scss/ChatList.scss';
 import { useAuth } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
-import { generateChatId } from '../utils/chatIDGenerator';
+import generateChatId from '../utils/chatIDGenerator';
 
 function ChatList() {
   const token = localStorage.getItem('token');
@@ -22,7 +22,7 @@ function ChatList() {
       try {
         const response = await fetch(`http://localhost:3003/api/chats/user/${auth.user.id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -42,7 +42,6 @@ function ChatList() {
   }, [auth.user.id]);
 
   const handleChatSelect = (user) => {
-    console.log(user);
     dispatch({ type: 'CHANGE_USER', payload: { user } });
   };
 
@@ -52,7 +51,7 @@ function ChatList() {
       try {
         const response = await fetch(`http://localhost:3003/api/users/search?username=${value}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -82,13 +81,12 @@ function ChatList() {
   const handleSearchSelect = async (value, option) => {
     setUserName(option.userDetails.userName);
     const selectedUser = option.userDetails;
-    console.log(selectedUser._id);
     const combinedId = generateChatId(auth.user.id, selectedUser._id);
 
     try {
       const response = await fetch(`http://localhost:3003/api/chats/${combinedId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
@@ -97,7 +95,7 @@ function ChatList() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ chatId: combinedId, userIds: [auth.user.id, selectedUser._id] }),
         });
@@ -106,7 +104,7 @@ function ChatList() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             chatId: combinedId,
@@ -122,7 +120,7 @@ function ChatList() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             chatId: combinedId,

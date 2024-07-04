@@ -56,7 +56,6 @@ function Navbar() {
         <div className="user-profile-container">
           <Tooltip title={currentUser.userName} color="#5B96F7">
             <Avatar size={50} icon={<UserOutlined />} src={currentUser.photoURL} />
-            {console.log(currentUser)}
           </Tooltip>
         </div>
       </div>
