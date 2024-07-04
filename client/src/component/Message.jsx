@@ -2,7 +2,6 @@ import {
   useRef,
   useEffect,
   useState,
-  useContext,
 } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
@@ -215,11 +214,6 @@ Message.propTypes = {
       time: PropTypes.string,
     }),
   }).isRequired,
-  currentLanguage: PropTypes.string,
-};
-
-Message.defaultProps = {
-  currentLanguage: 'vietnamese',
 };
 
 export default Message;
