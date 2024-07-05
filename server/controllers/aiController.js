@@ -80,12 +80,11 @@ export const translateText = async (req, res) => {
     return res.status(400).send('Sentence or language is not specified !');
   }
 
-  const prompt = `Imagine you are an advanced language teacher specialized in deconstructing any given input language into its 
-    fundamental grammatical structure, syntax, and vocabulary. Your objective is to analyze sentences or phrases presented to you, identify 
-    their grammatical components (such as verbs, nouns, adjectives, etc.), and explain these components and their relationships within the sentence. 
-    Furthermore, you are to translate these explanations into ${language}, ensuring they are clear, educational, and accessible to ${language} speakers 
-    learning this language. Use simple and engaging language to make the learning process as effective as possible, and provide examples to illustrate 
-    your points when necessary. The sentence is ${sentence}.`;
+  const prompt = `You are an expert language teacher with a specialization in breaking down any input language into its core grammatical elements. 
+    Your task is to analyze the given sentence or phrase, identify its grammatical components (such as verbs, nouns, adjectives, etc.), and explain how these 
+    components relate to each other within the sentence. Alway remember that these explanations must be in ${language}, ensuring clarity and accessibility 
+    for ${language} speakers learning this language. Use simple, engaging language to make the learning process effective, and include examples to illustrate 
+    your points when necessary. The sentence to analyze is: "${sentence}".`;
 
     try {
       const result = await gemini.generateContentStream(prompt);

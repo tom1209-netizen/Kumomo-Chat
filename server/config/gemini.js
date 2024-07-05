@@ -5,6 +5,6 @@ dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
 
-const gemini = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const gemini = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
 export default gemini;
